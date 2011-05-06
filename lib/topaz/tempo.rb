@@ -22,13 +22,13 @@ module Topaz
     end
     
     def start
-      output_midi { |o| o.puts(SystemCommon["Start"].to_bytes) }
+      output_midi { |o| o.puts(SystemRealtime["Start"].new.to_a) }
       @scheduler.run
       @scheduler.join
     end
 
     def stop
-      output_midi { |o| o.puts(SystemCommon["Stop"].to_bytes) }
+      output_midi { |o| o.puts(SystemRealtime["Stop"].new.to_a) }
       @scheduler.stop
     end
         
@@ -41,8 +41,10 @@ module Topaz
     end
     
     def initialize_midi
-      @scheduler.at(16) do
-        output_midi { |o| o.puts(SystemCommon["Continue"].to_bytes) }       
+      (1..16).each do |i|
+      @scheduler.at(i) do
+        output_midi { |o| o.puts(SystemRealtime["Continue"].new.to_a) }       
+      end
       end
     end
         
