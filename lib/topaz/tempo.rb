@@ -10,7 +10,9 @@ module Topaz
                   :outputs,
                   :scheduler
                   
-    def_delegators :scheduler, :at
+    def_delegators :scheduler, :at                   
+    def_delegator :scheduler, :tempo, :rate
+    def_delegator :scheduler, :tempo=, :rate=
     
     def initialize(tempo, options = {})
       @inputs = { :midi => (options[:midi_inputs] || [options[:midi_input]]).compact }
