@@ -1,0 +1,26 @@
+= topaz
+
+MIDI tempo tool for Ruby
+
+== Install
+
+  gem install topaz (not available yet)
+
+== Requirements
+
+* {gamelan}[http://github.com/jvoorhis/gamelan]
+* {midi-message}[http://github.com/arirusso/midi-message]
+* {nibbler}[http://github.com/arirusso/nibbler]  
+* {unimidi}[http://github.com/arirusso/unimidi]
+	
+== Usage
+
+== Author
+
+* {Ari Russo}[http://github.com/arirusso] <ari.russo at gmail.com>
+
+== License
+
+Apache 2.0, See the file LICENSE
+
+Copyright (c) 2011 Ari Russo
