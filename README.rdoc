@@ -10,8 +10,7 @@ MIDI tempo tool for Ruby
 
 * {gamelan}[http://github.com/jvoorhis/gamelan]
 * {midi-message}[http://github.com/arirusso/midi-message]
-* {nibbler}[http://github.com/arirusso/nibbler]  
-* {unimidi}[http://github.com/arirusso/unimidi]
+* {nibbler}[http://github.com/arirusso/nibbler]
 	
 == Usage
 
