@@ -9,6 +9,7 @@ require 'gamelan'
 require 'midi-message'
 require 'nibbler'
 
+require 'topaz/midi_input_observer'
 require 'topaz/tempo'
 
 module Topaz
