@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
+dir = File.dirname(File.expand_path(__FILE__))
+$LOAD_PATH.unshift dir + '/../../alsa-rawmidi/lib'
 
 require 'topaz'
 require 'unimidi'
