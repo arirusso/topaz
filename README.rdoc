@@ -1,6 +1,6 @@
 = topaz
 
-MIDI syncable tempo
+MIDI syncable tempo for Ruby
 
 == Requirements
 
@@ -11,10 +11,6 @@ MIDI syncable tempo
 == Recommended
 
 * {unimidi}[http://github.com/arirusso/unimidi] (gem install unimidi)
-	
-== Usage
-
-
 
 == Author
 
