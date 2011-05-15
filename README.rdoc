@@ -1,10 +1,6 @@
 = topaz
 
-MIDI syncable tempo generation in Ruby
-
-== Install
-
-  gem install topaz (not available yet)
+MIDI syncable tempo
 
 == Requirements
 

@@ -7,9 +7,8 @@
 require 'forwardable'
 require 'gamelan'
 require 'midi-message'
-require 'nibbler'
+require 'midi-eye'
 
-require 'topaz/observes_midi'
 require 'topaz/tempo'
 require 'topaz/tempo_calculator'
 
