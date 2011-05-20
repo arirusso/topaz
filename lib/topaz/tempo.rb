@@ -1,5 +1,6 @@
 module Topaz
   
+  # main tempo class
   class Tempo
     
     extend Forwardable
@@ -16,7 +17,13 @@ module Topaz
       @on_step = event
     end
     
-    # this will effectively reinitialize, switching from internal to external midi or vice versa 
+    # this will effectively reinitialize, switching from internal to external midi or vice versa
+    #
+    # if switching to internal clock, the rate of the midi tempo will be maintained
+    # by the internal generator
+    #
+    # if switching to external midi, the program will wait for a start or clock message
+    # 
     def switch_source
       
     end
