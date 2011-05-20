@@ -1,16 +1,17 @@
 #!/usr/bin/env ruby
 #
-# MIDI Tempo + Ruby
+# MIDI syncable tempo module in Ruby
 # (c)2011 Ari Russo and licensed under the Apache 2.0 License
 # 
 
 require 'forwardable'
 require 'gamelan'
-require 'midi-message'
 require 'midi-eye'
 
-require 'topaz/tempo'
+require 'topaz/external_midi_tempo'
+require 'topaz/internal_tempo'
 require 'topaz/tempo_calculator'
+require 'topaz/tempo'
 
 module Topaz
   

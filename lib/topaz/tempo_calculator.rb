@@ -13,7 +13,7 @@ module Topaz
     def process(timestamp)
       @timestamps.shift if @timestamps.length > 48
       @timestamps << timestamp
-      if @counter.eql?(23)
+      if @counter.eql?(47)
         diffs = []
         @timestamps.each_with_index { |n, i| (diffs << (@timestamps[i+1] - n)) unless @timestamps[i+1].nil? }
         unless diffs.empty?
