@@ -1,17 +1,27 @@
 module Topaz
 
-  class InternalTempo
+  class InternalTempo < Gamelan::Timer
     
-    def initialize(tempo, &handle_step)
-      @scheduler = Gamelan::Scheduler.new({:tempo => tempo})
-      @scheduler.at(1, &handle_step)
+    def initialize(tempo, action, options = {})
+      @action = action
+      super({:tempo => tempo})
     end
     
-    def start
-      @scheduler.run
-      @scheduler.join
+    def start(options = {})
+      run
+      join unless options[:background]
     end
     
+    protected
+    
+    # Run all ready tasks.
+    def dispatch
+      unless @last.eql?(@phase.to_i)
+        @action[:on_tick].call(@tempo) 
+        @last = @phase.to_i
+      end      
+    end
+     
   end
   
 end

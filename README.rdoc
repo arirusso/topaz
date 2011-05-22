@@ -1,6 +1,6 @@
 = topaz
 
-MIDI syncable tempo for Ruby
+MIDI syncable tempo generator in Ruby
 
 == Requirements
 
@@ -8,7 +8,7 @@ MIDI syncable tempo for Ruby
 * {midi-message}[http://github.com/arirusso/midi-message]
 * {nibbler}[http://github.com/arirusso/nibbler]
 
-== Recommended
+Also required, if you are using MIDI sync
 
 * {unimidi}[http://github.com/arirusso/unimidi] (gem install unimidi)
 

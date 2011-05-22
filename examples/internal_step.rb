@@ -8,10 +8,11 @@ class Sequencer
   
   def step
     @i ||= 0
-    p "step #{i+=1}"
+    p "step #{@i+=1}"
   end
   
 end
 
-@tempo = Topaz::Tempo.new(132) { Sequencer.step }
+seq = Sequencer.new
+@tempo = Topaz::Tempo.new(132) { seq.step }
 @tempo.start
