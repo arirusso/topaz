@@ -10,10 +10,11 @@ module Topaz
     def_delegators :source, :tempo
   
     def initialize(*a, &event)
+      options = a.last.kind_of?(Hash) ? a.last : {}  
       @action = { :on_tick => event }
       @source = case a.first
-        when Numeric then InternalTempo.new(a.first, @action)
-        when Hash then ExternalMIDITempo.new(a.first[:midi], @action)
+        when Numeric then InternalTempo.new(a.first, @action, options)
+        when Hash then ExternalMIDITempo.new(a.first[:midi], @action, options)
       end
     end
     
