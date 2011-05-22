@@ -43,7 +43,7 @@ Then start the tempo listener
 
   @tempo.start
   
-If you're using external clock, it will wait for a "start" or "clock" signal.
+If you're using external clock, it will wait for a "start" or "clock" signal before doing anything.
 
 You can also run this in the background using
 
