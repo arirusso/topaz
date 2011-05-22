@@ -9,8 +9,7 @@ MIDI syncable tempo generator in Ruby
 == Requirements
 
 * {gamelan}[http://github.com/jvoorhis/gamelan]
-* {midi-message}[http://github.com/arirusso/midi-message]
-* {nibbler}[http://github.com/arirusso/nibbler]
+* {midi-eye}[http://github.com/arirusso/midi-eye]
 * {unimidi}[http://github.com/arirusso/unimidi]
 
 these will install automatically when you install from the gem
@@ -43,6 +42,12 @@ and for stepping using internal generated clock
 Then start the tempo listener
 
   @tempo.start
+  
+If you're using external clock, it will wait for a "start" or "clock" signal.
+
+You can also run this in the background using
+
+  @tempo.start(:background => true) 
 
 == Author
 
