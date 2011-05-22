@@ -17,5 +17,5 @@ class Sequencer
 end
 
 seq = Sequencer.new
-@tempo = Topaz::Tempo.new(:midi => @input) { seq.step; p @tempo.tempo }
+@tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
 @tempo.start

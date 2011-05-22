@@ -2,12 +2,47 @@
 
 MIDI syncable tempo generator in Ruby
 
+== Installation
+
+  gem install midi-topaz
+  
 == Requirements
 
 * {gamelan}[http://github.com/jvoorhis/gamelan]
 * {midi-message}[http://github.com/arirusso/midi-message]
 * {nibbler}[http://github.com/arirusso/nibbler]
-* {unimidi}[http://github.com/arirusso/unimidi] (gem install unimidi)
+* {unimidi}[http://github.com/arirusso/unimidi]
+
+these will install automatically when you install from the gem
+
+== Usage
+
+  require 'topaz'
+  
+For demonstration purposes, here's a fake sequencer class and object
+
+  class Sequencer
+  
+    def step
+      @i ||= 0
+      p "step #{@i+=1}"
+    end
+  
+  end
+  
+  seq = Sequencer.new
+  
+To step that sequencer using external MIDI clock, we
+
+  @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
+  
+Likewise, to step using internal generated clock, you would use
+
+  @tempo = Topaz::Tempo.new(132) { seq.step }
+  
+Then start the tempo listener
+
+  @tempo.start
 
 == Author
 
