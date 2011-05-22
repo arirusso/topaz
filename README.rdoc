@@ -32,8 +32,7 @@ For demonstration purposes, here's a mock sequencer class and object
   
 To step that sequencer using external MIDI clock, you would use
 
-  # a midi input
-  @input = UniMIDI::Input.first.open 
+  @input = UniMIDI::Input.first.open # an midi input 
   
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
     
@@ -47,8 +46,7 @@ By default, the block will be called at quarter note intervals but other interva
   
 You can automatically send MIDI start/stop/clock signals to an external MIDI device by passing in a MIDI output
 
-  # a midi input
-  @output = UniMIDI::Output.first.open 
+  @output = UniMIDI::Output.first.open # a midi output 
   
   @tempo = Topaz::Tempo.new(120, :midi => @output) { seq.step }
   
