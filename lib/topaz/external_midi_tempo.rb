@@ -5,13 +5,14 @@ module Topaz
    
     extend Forwardable 
     
+    attr_accessor :action
     attr_reader :clock
     
     def_delegators :clock, :start, :stop
   
-    def initialize(input, action, options = {})
+    def initialize(input, options = {})
+      @action = options[:action]
       self.interval = options[:interval] || 4
-      @action = action
       @tempo_calculator = TempoCalculator.new
       @clock = MIDIEye::Listener.new(input)
       
@@ -33,8 +34,11 @@ module Topaz
     def initialize_clock
       @counter = 0
       @clock.listen_for(:name => "Clock") do |msg|
+        @action[:destinations].each do |output|
+          output.on_tick
+        end 
         @tempo_calculator.timestamps << msg[:timestamp]
-        if @counter.eql?(@per_tick) 
+        if @counter.eql?(@per_tick)
           @action[:on_tick].call
           @counter = 0 
         else
