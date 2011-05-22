@@ -25,18 +25,18 @@ For demonstration purposes, here's a fake sequencer class and object
   
     def step
       @i ||= 0
-      p "step #{@i+=1}"
+      $stdout.puts "step #{@i+=1}"
     end
   
   end
   
   seq = Sequencer.new
   
-To step that sequencer using external MIDI clock, we
+To step that sequencer using external MIDI clock, you would use
 
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
   
-Likewise, to step using internal generated clock, you would use
+and for stepping using internal generated clock
 
   @tempo = Topaz::Tempo.new(132) { seq.step }
   
