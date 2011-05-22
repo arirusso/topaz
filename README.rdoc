@@ -33,9 +33,14 @@ For demonstration purposes, here's a fake sequencer class and object
   
 To step that sequencer using external MIDI clock, you would use
 
+  @input = UniMIDI::Input.first.open                       # a midi input
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
   
-and for stepping using internal generated clock
+By default, the block will be called at quarter note intervals, but other intervals can be used such as in this case 16th notes:
+
+  @tempo = Topaz::Tempo.new(:midi => @input, :interval => 16) { seq.step }
+  
+For stepping using internal generated clock
 
   @tempo = Topaz::Tempo.new(132) { seq.step }
   
@@ -47,7 +52,12 @@ If you're using external clock, it will wait for a "start" or "clock" signal bef
 
 You can also run this in the background using
 
-  @tempo.start(:background => true) 
+  @tempo.start(:background => true)
+  
+== Documentation
+
+* {examples}[http://github.com/arirusso/topaz/tree/master/examples]
+* {rdoc}[http://rdoc.info/gems/topaz] 
 
 == Author
 
