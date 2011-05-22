@@ -7,9 +7,6 @@ MIDI syncable tempo generator in Ruby
 * {gamelan}[http://github.com/jvoorhis/gamelan]
 * {midi-message}[http://github.com/arirusso/midi-message]
 * {nibbler}[http://github.com/arirusso/nibbler]
-
-Also required, if you are using MIDI sync
-
 * {unimidi}[http://github.com/arirusso/unimidi] (gem install unimidi)
 
 == Author

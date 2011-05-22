@@ -17,7 +17,7 @@ module Topaz
     # Run all ready tasks.
     def dispatch
       unless @last.eql?(@phase.to_i)
-        @action[:on_tick].call(@tempo) 
+        @action[:on_tick].call
         @last = @phase.to_i
       end      
     end

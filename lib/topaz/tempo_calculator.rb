@@ -2,7 +2,7 @@ module Topaz
   
   class TempoCalculator
     
-    attr_reader :tempo
+    attr_reader :tempo, :timestamps
     
     def initialize(tempo = nil)
       @tempo = tempo
@@ -10,21 +10,16 @@ module Topaz
       @counter = 0
     end
     
-    def process(timestamp)
-      @timestamps.shift if @timestamps.length > 48
-      @timestamps << timestamp
-      if @counter.eql?(47)
-        diffs = []
-        @timestamps.each_with_index { |n, i| (diffs << (@timestamps[i+1] - n)) unless @timestamps[i+1].nil? }
-        unless diffs.empty?
-          avg = (diffs.inject { |a, b| a + b }.to_f / diffs.length.to_f) 
-          @tempo = ppq24_millis_to_bpm(avg)
-        end 
-        p @tempo
-        @counter = 0
-      else
-        @counter += 1
-      end
+    def find_tempo
+      tempo = nil
+      diffs = []
+      @timestamps.shift while @timestamps.length > 24
+      @timestamps.each_with_index { |n, i| (diffs << (@timestamps[i+1] - n)) unless @timestamps[i+1].nil? }
+      unless diffs.empty?
+        avg = (diffs.inject { |a, b| a + b }.to_f / diffs.length.to_f) 
+        tempo = ppq24_millis_to_bpm(avg)
+      end 
+      @tempo = tempo
     end
     
     private

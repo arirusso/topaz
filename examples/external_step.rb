@@ -11,10 +11,11 @@ class Sequencer
   
   def step
     @i ||= 0
-    p "step #{i+=1}"
+    p "step #{@i+=1}"
   end
   
 end
 
-@tempo = Topaz::Tempo.new(:midi => @input) { Sequencer.step }
+seq = Sequencer.new
+@tempo = Topaz::Tempo.new(:midi => @input) { seq.step; p @tempo.tempo }
 @tempo.start
