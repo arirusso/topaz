@@ -74,6 +74,10 @@ You can view the current tempo, which is calculated by Topaz if you're using an 
 You can run the generator in a background thread by passing :background => true to Tempo#start
 
   @tempo.start(:background => true)
+  
+You can pass in a block that will stop the clock when it evaluates to true
+
+  @tempo.stop_when { @i.eql?(20) }
     
 == Documentation
 
