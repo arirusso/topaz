@@ -12,7 +12,7 @@ module Topaz
   
     def initialize(*args, &event)
       @destinations = []
-      
+
       if args.first.kind_of?(Numeric)
         @source = InternalTempo.new(args.shift)
       end
@@ -20,8 +20,14 @@ module Topaz
       
       initialize_midi_io(options)
       raise "You must specify an internal tempo rate or an external tempo source" if @source.nil?
-      @source.action = { :on_tick => event, :destinations => @destinations }
-      @source.interval = options[:interval] unless options[:interval].nil? 
+      @source.action = { 
+        :on_start => nil,
+        :on_stop => nil,
+        :on_tick => event,        
+        :destinations => @destinations,
+        :stop_when => nil
+      }
+      @source.interval = options[:interval] unless options.nil? || options[:interval].nil? 
     end
     
     # this will change the tempo
@@ -39,12 +45,17 @@ module Topaz
     
     # pass in a callback that is called when start is called
     def on_start(&block)
-      @on_start = block
+      @source.action[:on_start] = block
     end
 
     # pass in a callback that is called when stop is called
     def on_stop(&block)
-      @on_stop = block
+      @source.action[:on_stop] = block
+    end
+    
+    # pass in a callback which will 
+    def stop_when(&block)
+      @source.action[:stop_when] = block
     end
         
     # this will start the generator
@@ -55,21 +66,20 @@ module Topaz
     def start(options = {})
       @start_time = Time.now
       @destinations.each { |dest| dest.on_start }
-      @on_start.call unless @on_start.nil?
       @source.start(options)
     end
     
     # this will stop tempo
     def stop(options = {})
       @destinations.each { |dest| dest.on_stop }
-      @on_stop.call unless @on_stop.nil?
       @source.stop(options)
     end
     
     # seconds since start was called
-    def time_since_start
+    def start_time
       @start_time.nil? ? nil : (Time.now - @start_time).to_f
     end
+    alias_method :time_since_start, :start_time
     
     private
         
