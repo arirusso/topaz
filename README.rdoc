@@ -15,34 +15,36 @@ MIDI syncable tempo generator in Ruby
 * {midi-message}[http://github.com/arirusso/midi-message]
 * {unimidi}[http://github.com/arirusso/unimidi]
 
-these will install automatically when you do gem install
+these will install automatically with the gem
 
 == Usage
 
-  require 'topaz'
+  require "topaz"
   
 For demonstration purposes, here's a mock sequencer class and object
 
-  class Sequencer  
+  class Sequencer
+    
     def step
       @i ||= 0
       $stdout.puts "step #{@i+=1}"
-    end  
+    end
+      
   end
   
   seq = Sequencer.new
+
+Topaz allows you to create a tempo object to step that sequencer at a given rate.  To use a 132 bpm rate generated internally by your computer, you would use
+
+  @tempo = Topaz::Tempo.new(132) { seq.step }
   
-To step that sequencer using external MIDI clock, you would use
+If you wish to step that sequencer using external MIDI clock, you can pass a MIDI input to the Tempo object where those clock messages might appear
 
   @input = UniMIDI::Input.first.open # an midi input 
   
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
-    
-Or, for stepping using clock generated internally by your computer use
-
-  @tempo = Topaz::Tempo.new(132) { seq.step }
-  
-By default, the block will be called at quarter note intervals but other intervals can be used.  This is used the same way for both internal and external clock.  In the following example, 16th notes will occur at 138 bpm   
+      
+Whether or not you use an internal or external clock source, the block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 bpm   
 
   @tempo = Topaz::Tempo.new(138, :interval => 16) { seq.step }
   
@@ -52,11 +54,11 @@ You can automatically send MIDI start/stop/clock signals to an external MIDI dev
   
   @tempo = Topaz::Tempo.new(120, :midi => @output) { seq.step }
   
-or, sync both input and output
+Or, sync both input and output
 
   @tempo = Topaz::Tempo.new(:midi => [@input, @output]) { seq.step }
   
-Once the Tempo object is initialized, start the tempo listener
+Once the Tempo object is initialized, start the Tempo object
 
   @tempo.start
   
@@ -65,7 +67,7 @@ If you're syncing to external clock, nothing will happen until a "start" or "clo
 You can also run this in the background using
 
   @tempo.start(:background => true)
-  
+    
 == Documentation
 
 * {examples}[http://github.com/arirusso/topaz/tree/master/examples]
