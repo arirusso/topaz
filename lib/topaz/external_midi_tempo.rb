@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 module Topaz
   
   # trigger an event based on received midi clock messages
@@ -24,6 +25,20 @@ module Topaz
       @tempo_calculator.find_tempo
     end
     
+    #
+    # change the clock interval
+    # defaults to click once every 24 ticks or one quarter note which is the MIDI standard.
+    # however, if you wish to fire the on_tick event twice as often 
+    # (or once per 12 clicks), pass 8 
+    #
+    #   1 = whole note
+    #   2 = half note
+    #   4 = quarter note
+    #   6 = dotted quarter
+    #   8 = eighth note
+    #  16 = sixteenth note
+    #  etc
+    #
     def interval=(val)
       per_qn = val / 4
       @per_tick = 24 / per_qn

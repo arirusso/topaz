@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 module Topaz
   
   class TempoCalculator
@@ -10,6 +11,7 @@ module Topaz
       @counter = 0
     end
     
+    # analyse the tempo based on the last 24 ticks
     def find_tempo
       tempo = nil
       diffs = []
@@ -24,6 +26,7 @@ module Topaz
     
     private
     
+    # convert the raw tick intervals to bpm
     def ppq24_millis_to_bpm(ppq24)
       quarter_note = (ppq24 * 24.to_f)
       minute = (60 * 1000) # one minute in millis
