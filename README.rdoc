@@ -2,7 +2,7 @@
 
 {pic}[http://images.treetrouble.net/images/topaz.jpg]
 
-MIDI syncable tempo generation in Ruby
+MIDI syncable tempo in Ruby
 
 == Installation
 
@@ -34,35 +34,35 @@ For demonstration purposes, here's a mock sequencer class and object
   
   seq = Sequencer.new
 
-A simple application of Topaz is to create a Tempo object to step that sequencer at a given rate.  To use a 130 bpm rate generated internally by your computer, you would use
+The simplest application of Topaz is to create a clock to step that sequencer at a given rate.  Using timing generated internally by your computer, the passed in block will be called repeatedly at 130 BPM
 
   @tempo = Topaz::Tempo.new(130) { seq.step }
-  
-If you wish to use external MIDI clock to control the tempo, you can pass a MIDI input to the Tempo object
+
+You may also use another MIDI device to generate timing and control the tempo.  The unimidi input to which that device is connected can be passed to the Tempo constructor    
 
   @input = UniMIDI::Input.first.open # an midi input 
   
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
         
-Automatically send MIDI start/stop/clock signals to an external MIDI device by passing in a MIDI output
+Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI start, stop and clock signals will automatically be sent to that output at the appropriate time
 
   @output = UniMIDI::Output.first.open # a midi output 
   
   @tempo = Topaz::Tempo.new(120, :midi => @output) { seq.step }
   
-Or, sync both input and output
+Both input and output can be used simultaneously
 
   @tempo = Topaz::Tempo.new(:midi => [@input, @output]) { seq.step }
   
-Once the Tempo object is initialized, start the Tempo object
+Once the Tempo object is initialized, start the clock
 
   @tempo.start
   
-If you're syncing to external clock, nothing will happen until a "start" or "clock" message is received
+If you are syncing to external clock, nothing will happen until a "start" or "clock" message is received
   
 ==== Other things to note
 
-Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 bpm   
+Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 BPM   
 
   @tempo = Topaz::Tempo.new(138, :interval => 16) { seq.step }
   
