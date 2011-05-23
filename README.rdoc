@@ -2,7 +2,7 @@
 
 {pic}[http://images.treetrouble.net/images/topaz.jpg]
 
-MIDI syncable tempo generation and analysis in Ruby
+MIDI syncable tempo generation in Ruby
 
 == Installation
 
