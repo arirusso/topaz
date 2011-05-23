@@ -36,10 +36,12 @@ module Topaz
       end 
     end
     
+    # pass in a callback that is called when start is called
     def on_start(&block)
       @on_start = block
     end
 
+    # pass in a callback that is called when stop is called
     def on_stop(&block)
       @on_stop = block
     end
@@ -50,16 +52,22 @@ module Topaz
     # or clock message
     #
     def start(options = {})
+      @start_time = Time.now
       @destinations.each { |dest| dest.on_start }
       @on_start.call unless @on_start.nil?
       @source.start(options)
     end
     
-    # this will stop everything
+    # this will stop tempo
     def stop(options = {})
       @destinations.each { |dest| dest.on_stop }
       @on_stop.call unless @on_stop.nil?
       @source.stop(options)
+    end
+    
+    # seconds since start was called
+    def time_since_start
+      @start_time.nil? ? nil : (Time.now - @start_time).to_f
     end
     
     private
