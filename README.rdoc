@@ -1,6 +1,6 @@
 = topaz
 
-{pic}[http://images.treetrouble.net/images/dx.jpg]
+{pic}[http://images.treetrouble.net/images/topaz.jpg]
 
 MIDI syncable tempo generator in Ruby
 
