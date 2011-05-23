@@ -44,7 +44,7 @@ If you wish to use external MIDI clock to control the tempo, you can pass a MIDI
   
   @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
         
-You can automatically send MIDI start/stop/clock signals to an external MIDI device by passing in a MIDI output
+Automatically send MIDI start/stop/clock signals to an external MIDI device by passing in a MIDI output
 
   @output = UniMIDI::Output.first.open # a midi output 
   
@@ -62,20 +62,20 @@ If you're syncing to external clock, nothing will happen until a "start" or "clo
   
 ==== Other things to note
 
-Whether or not you use an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 bpm   
+Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 bpm   
 
   @tempo = Topaz::Tempo.new(138, :interval => 16) { seq.step }
   
-You can view the current tempo, which is calculated by Topaz if you're using an external MIDI source.
+View the current tempo, which is calculated by Topaz if you're using an external MIDI source.
 
   @tempo.tempo
     => 132.422000
   
-You can run the generator in a background thread by passing :background => true to Tempo#start
+Run the generator in a background thread by passing :background => true to Tempo#start
 
   @tempo.start(:background => true)
   
-You can pass in a block that will stop the clock when it evaluates to true
+Pass in a block that will stop the clock when it evaluates to true
 
   @tempo.stop_when { @i.eql?(20) }
     
