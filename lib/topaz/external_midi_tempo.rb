@@ -21,14 +21,18 @@ module Topaz
       @tempo_calculator.find_tempo
     end
     
-    def start
+    def start(*a)
       @action[:on_start].call unless @action[:on_start].nil?
-      @clock.start
+      @clock.start(*a)
     end
     
-    def stop
+    def stop(*a)
       @action[:on_stop].call unless @action[:on_stop].nil?
-      @clock.start
+      @clock.start(*a)
+    end
+    
+    def join
+      @clock.join
     end
         
     #

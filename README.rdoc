@@ -50,9 +50,9 @@ Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI 
   
   @tempo = Topaz::Tempo.new(120, :midi => @output) { seq.step }
   
-Both input and output can be used simultaneously
+Input and multiple outputs can be used simultaneously
 
-  @tempo = Topaz::Tempo.new(:midi => [@input, @output]) { seq.step }
+  @tempo = Topaz::Tempo.new(:midi => [@input, @output1, @output2]) { seq.step }
   
 Once the Tempo object is initialized, start the clock
 

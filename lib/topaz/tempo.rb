@@ -8,7 +8,7 @@ module Topaz
     
     attr_reader :source
     
-    def_delegators :source, :tempo, :interval, :interval=
+    def_delegators :source, :tempo, :interval, :interval=, :join
   
     def initialize(*args, &event)
       @destinations = []
