@@ -67,10 +67,11 @@ Whether or not you are using an internal or external clock source, the event blo
   @tempo = Topaz::Tempo.new(138, :interval => 16) { seq.step }
   
 View the current tempo, which is calculated by Topaz if you're using an external MIDI source.
+(this feature is currently in-progress and may return some low values - 5/26/2011)
 
   @tempo.tempo
     => 132.422000
-  
+      
 Run the generator in a background thread by passing :background => true to Tempo#start
 
   @tempo.start(:background => true)

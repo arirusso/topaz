@@ -3,7 +3,7 @@ $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 
 require 'topaz'
 
-# a fake little sequencer for demonstration
+# a mock sequencer for demonstration
 class Sequencer
   
   def step

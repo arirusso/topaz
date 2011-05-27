@@ -6,7 +6,7 @@ require 'topaz'
 # first, initialize the MIDI input port
 @input = UniMIDI::Input.first.open
 
-# a fake little sequencer for demonstration
+# a mock sequencer for demonstration
 class Sequencer
   
   def step
@@ -17,5 +17,5 @@ class Sequencer
 end
 
 seq = Sequencer.new
-@tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
+@tempo = Topaz::Tempo.new(:midi => @input) { seq.step; p "tempo: #{@tempo.tempo}" }
 @tempo.start
