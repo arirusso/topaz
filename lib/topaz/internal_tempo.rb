@@ -20,6 +20,7 @@ module Topaz
       @action[:on_start].call unless @action[:on_start].nil?
       run
       join unless options[:background]
+      self
     end
     
     # change the timer's click interval    
@@ -30,7 +31,13 @@ module Topaz
     # stop the timer
     def stop(*a)
       @action[:on_stop].call unless @action[:on_stop].nil?
-      super
+      super()
+      self
+    end
+    
+    def join
+      super()
+      self
     end
     
     protected

@@ -24,15 +24,18 @@ module Topaz
     def start(*a)
       @action[:on_start].call unless @action[:on_start].nil?
       @clock.start(*a)
+      self
     end
     
     def stop(*a)
       @action[:on_stop].call unless @action[:on_stop].nil?
       @clock.start(*a)
+      self
     end
     
     def join
       @clock.join
+      self
     end
         
     #
