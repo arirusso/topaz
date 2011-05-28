@@ -17,12 +17,5 @@ class InternalTempoTest < Test::Unit::TestCase
     
     assert_equal(count_to, i)
   end
-  
-  def test_timer
-    i = 0
-    count_to = 5
-    
-    tempo = Tempo.new(60) { i += 1 }
-  end
 
 end
