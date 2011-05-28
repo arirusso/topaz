@@ -62,7 +62,7 @@ If you are syncing to external clock, nothing will happen until a "start" or "cl
   
 ==== Other things to note
 
-Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, 16th notes will occur at 138 BPM   
+Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, the event will be fired 4 times per beat (16th notes) at 138 BPM   
 
   @tempo = Topaz::Tempo.new(138, :interval => 16) { seq.step }
   
