@@ -73,13 +73,14 @@ module Topaz
     def stop(options = {})
       @destinations.each { |dest| dest.on_stop }
       @source.stop(options)
+      @start_time = nil
     end
     
     # seconds since start was called
-    def start_time
+    def time
       @start_time.nil? ? nil : (Time.now - @start_time).to_f
     end
-    alias_method :time_since_start, :start_time
+    alias_method :time_since_start, :time
     
     private
         
