@@ -57,6 +57,11 @@ module Topaz
     def stop_when(&block)
       @source.action[:stop_when] = block
     end
+    
+    # pass in a callback which will be fired on each tick
+    def on_tick(&block)
+      @source.action[:on_tick] = block
+    end
         
     # this will start the generator
     #
