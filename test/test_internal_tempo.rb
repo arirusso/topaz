@@ -40,4 +40,14 @@ class InternalTempoTest < Test::Unit::TestCase
     
   end
 
+  def test_internal_interval
+    tempo = Tempo.new(120)
+    
+    assert_equal(4, tempo.interval)
+
+    tempo.interval = 8
+    
+    assert_equal(8, tempo.interval)
+  end
+
 end

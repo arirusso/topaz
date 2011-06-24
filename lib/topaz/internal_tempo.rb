@@ -28,6 +28,10 @@ module Topaz
       @interval = val / 4
     end
     
+    def interval
+      @interval * 4
+    end
+    
     # stop the timer
     def stop(*a)
       @action[:on_stop].call unless @action[:on_stop].nil?
