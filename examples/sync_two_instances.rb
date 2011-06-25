@@ -17,6 +17,8 @@ seq = Sequencer.new
 
 # this sets 8th note = 132 bpm.  the default value is quarter note (or 4)
 @tempo = Topaz::Tempo.new(132, :interval => 8) { seq.step(1) }
-@tempo2 = Topaz::Tempo.new(180, :interval => 8, :children => @tempo) { seq.step(2) }
-#@tempo.start(:background => true)
+@tempo2 = Topaz::Tempo.new(180, :interval => 8) { seq.step(2) }
+
+@tempo2 << @tempo
+
 @tempo2.start
