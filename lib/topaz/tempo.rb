@@ -6,17 +6,18 @@ module Topaz
     
     extend Forwardable
     
-    attr_reader :source
+    attr_reader :source, :destinations
     
     def_delegators :source, :tempo, :interval, :interval=, :join
   
     def initialize(*args, &event)
+      @children = []
       @destinations = []
       @actions = { 
-        :on_start => nil,
-        :on_stop => nil,
-        :on_tick => event,        
-        :on_midi_clock => Proc.new { @destinations.each { |d| d.on_tick } },
+        :start => nil,
+        :stop => nil,
+        :tick => event,        
+        :midi_clock => Proc.new { destinations.each { |d| d.tick } },
         :stop_when => nil
       }
 
@@ -29,6 +30,10 @@ module Topaz
       raise "You must specify an internal tempo rate or an external tempo source" if @source.nil?
       
       @source.interval = options[:interval] unless options.nil? || options[:interval].nil? 
+    end
+    
+    def destinations
+      (@destinations + @children.map { |c| c.destinations }.flatten)
     end
     
     # this will change the tempo
@@ -46,12 +51,12 @@ module Topaz
     
     # pass in a callback that is called when start is called
     def on_start(&block)
-      @actions[:on_start] = block
+      @actions[:start] = block
     end
 
     # pass in a callback that is called when stop is called
     def on_stop(&block)
-      @actions[:on_stop] = block
+      @actions[:stop] = block
     end
     
     # pass in a callback which will 
@@ -61,7 +66,7 @@ module Topaz
     
     # pass in a callback which will be fired on each tick
     def on_tick(&block)
-      @actions[:on_tick] = block
+      @actions[:tick] = block
     end
         
     # this will start the generator
@@ -71,16 +76,16 @@ module Topaz
     #
     def start(options = {})
       @start_time = Time.now
-      @destinations.each { |dest| dest.on_start }
+      @destinations.each { |dest| dest.start }
       @source.start(options)
-      @actions[:on_start].call unless @actions[:on_start].nil?
+      @actions[:start].call unless @actions[:start].nil?
     end
     
     # this will stop tempo
     def stop(options = {})
-      @destinations.each { |dest| dest.on_stop }
+      @destinations.each { |dest| dest.stop }
       @source.stop(options)
-      @actions[:on_stop].call unless @actions[:on_stop].nil?
+      @actions[:stop].call unless @actions[:stop].nil?
       @start_time = nil
     end
     
@@ -89,10 +94,6 @@ module Topaz
       @start_time.nil? ? nil : (Time.now - @start_time).to_f
     end
     alias_method :time_since_start, :time
-    
-    def tick
-      
-    end
     
     private
         

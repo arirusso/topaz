@@ -9,17 +9,17 @@ module Topaz
     end
     
     # send a start message
-    def on_start
+    def start
       @output.puts(MIDIMessage::SystemRealtime["Start"].new.to_a)
     end
 
     # send a stop message
-    def on_stop
+    def stop
       @output.puts(MIDIMessage::SystemRealtime["Stop"].new.to_a)
     end
         
     # send a clock message
-    def on_tick
+    def tick
       @output.puts(MIDIMessage::SystemRealtime["Clock"].new.to_a)
     end
     

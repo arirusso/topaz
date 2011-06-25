@@ -9,6 +9,7 @@ require 'gamelan'
 require 'midi-eye'
 require 'midi-message'
 
+require 'topaz/tempo_source'
 require 'topaz/external_midi_tempo'
 require 'topaz/internal_tempo'
 require 'topaz/midi_sync_output'

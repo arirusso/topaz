@@ -3,6 +3,8 @@ module Topaz
 
   class InternalTempo < Gamelan::Timer
     
+    include TempoSource
+    
     attr_accessor :action
     
     def initialize(actions, tempo, options = {})
@@ -48,16 +50,13 @@ module Topaz
       # stuff to do on every tick      
       unless @last_sync.eql?((@phase * 24).to_i)
         # look for stop
-        if !@actions[:stop_when].nil? && @actions[:stop_when].call
-          stop
-          return
-        end 
-        @actions[:on_midi_clock].call        
+        (stop and return) if stop?
+        do_midi_clock        
         @last_sync = (@phase * 24).to_i
       end
       # stuff to do on @interval
       unless @last.eql?((@phase * @interval).to_i)
-        @actions[:on_tick].call
+        do_tick
         @last = (@phase * @interval).to_i
       end      
     end
