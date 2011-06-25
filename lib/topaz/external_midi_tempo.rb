@@ -4,11 +4,10 @@ module Topaz
   # trigger an event based on received midi clock messages
   class ExternalMIDITempo
    
-    attr_accessor :action
     attr_reader :clock
   
-    def initialize(input, options = {})
-      @action = options[:action]
+    def initialize(actions, input, options = {})
+      @actions = actions
       self.interval = options[:interval] || 4
       @tempo_calculator = TempoCalculator.new
       @clock = MIDIEye::Listener.new(input)
@@ -21,14 +20,12 @@ module Topaz
       @tempo_calculator.find_tempo
     end
     
-    def start(*a)
-      @action[:on_start].call unless @action[:on_start].nil?
+    def start(*a)      
       @clock.start(*a)
       self
     end
     
     def stop(*a)
-      @action[:on_stop].call unless @action[:on_stop].nil?
       @clock.start(*a)
       self
     end
@@ -62,16 +59,14 @@ module Topaz
     def initialize_clock
       @counter = 0
       @clock.listen_for(:name => "Clock") do |msg|
-        if !@action[:stop_when].nil? && @action[:stop_when].call
+        if !@actions[:stop_when].nil? && @actions[:stop_when].call
           stop
           return
         end 
-        @action[:destinations].each do |output|
-          output.on_tick
-        end        
+        @actions[:on_midi_clock].call
         @tempo_calculator.timestamps << msg[:timestamp]
         if @counter.eql?(@per_tick)
-          @action[:on_tick].call
+          @actions[:on_tick].call
           @counter = 0 
         else
           @counter += 1

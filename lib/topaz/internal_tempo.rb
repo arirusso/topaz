@@ -5,10 +5,9 @@ module Topaz
     
     attr_accessor :action
     
-    def initialize(tempo, options = {})
-      @action = options[:action]
+    def initialize(actions, tempo, options = {})
+      @actions = actions
       self.interval = options[:interval] || 4 
-      @destinations = options[:destinations]
       @last = 0
       @last_sync = 0
       super({:tempo => tempo})
@@ -17,7 +16,6 @@ module Topaz
     # start the internal timer
     # pass :background => true to keep the timer in a background thread
     def start(options = {})
-      @action[:on_start].call unless @action[:on_start].nil?
       run
       join unless options[:background]
       self
@@ -34,7 +32,6 @@ module Topaz
     
     # stop the timer
     def stop(*a)
-      @action[:on_stop].call unless @action[:on_stop].nil?
       super()
       self
     end
@@ -51,16 +48,16 @@ module Topaz
       # stuff to do on every tick      
       unless @last_sync.eql?((@phase * 24).to_i)
         # look for stop
-        if !@action[:stop_when].nil? && @action[:stop_when].call
+        if !@actions[:stop_when].nil? && @actions[:stop_when].call
           stop
           return
         end 
-        @action[:destinations].each { |dest| dest.on_tick }        
+        @actions[:on_midi_clock].call        
         @last_sync = (@phase * 24).to_i
       end
       # stuff to do on @interval
       unless @last.eql?((@phase * @interval).to_i)
-        @action[:on_tick].call
+        @actions[:on_tick].call
         @last = (@phase * @interval).to_i
       end      
     end
