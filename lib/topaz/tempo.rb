@@ -30,7 +30,11 @@ module Topaz
       initialize_midi_io(options)
       raise "You must specify an internal tempo rate or an external tempo source" if @source.nil?
       
-      @source.interval = options[:interval] unless options.nil? || options[:interval].nil? 
+      unless options.nil?        
+        @source.interval = options[:interval] unless options[:interval].nil?      
+        initialize_sync(options[:children], options[:sync_to])
+      end
+      
     end
     
     # this will change the tempo
@@ -115,6 +119,13 @@ module Topaz
     end
     
     private
+    
+    def initialize_sync(children, sync_to)
+      children = [children].flatten.compact
+      sync_to = [sync_to].flatten.compact
+      children.each { |t| add_destination(t) }
+      sync_to.each { |t| sync_to(t) }
+    end
         
     def initialize_midi_io(args)
       ports = args.kind_of?(Hash) ? args[:midi] : args
