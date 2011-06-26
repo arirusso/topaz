@@ -113,6 +113,12 @@ module Topaz
       tempo.add_destination(self)
     end
     
+    # remove all sync connections to <em>tempo</em>
+    def unsync(tempo)
+      @destinations.delete(tempo)
+      tempo.unsync(self)
+    end
+    
     protected
     
     def tick
