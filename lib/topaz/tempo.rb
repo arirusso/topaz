@@ -103,6 +103,11 @@ module Topaz
     end
     alias_method :<<, :add_destination
     
+    # sync to another Tempo object
+    def sync_to(tempo)
+      tempo.add_destination(self)
+    end
+    
     protected
     
     def tick
