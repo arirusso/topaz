@@ -32,7 +32,7 @@ module Topaz
       
       unless options.nil?        
         @source.interval = options[:interval] unless options[:interval].nil?      
-        initialize_sync(options[:children], options[:sync_to])
+        #initialize_sync(options[:children], options[:sync_to])
       end
       
     end
@@ -136,12 +136,12 @@ module Topaz
     
     private
     
-    def initialize_sync(children, sync_to)
-      children = [children].flatten.compact
-      sync_to = [sync_to].flatten.compact
-      children.each { |t| add_destination(t) }
-      sync_to.each { |t| sync_to(t) }
-    end
+    #def initialize_sync(children, sync_to)
+    #  children = [children].flatten.compact
+    #  sync_to = [sync_to].flatten.compact
+    #  children.each { |t| add_destination(t) }
+    #  sync_to.each { |t| sync_to(t) }
+    #end
         
     def initialize_midi_io(args)
       ports = args.kind_of?(Hash) ? args[:midi] : args
