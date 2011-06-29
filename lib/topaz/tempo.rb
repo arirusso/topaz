@@ -115,7 +115,7 @@ module Topaz
       @start_time.nil? ? tempo.stop(:parent => self) : tempo.start(:parent => self)
     end
     alias_method :<<, :add_destination
-    alias_method :sync_from, :add_destination
+    alias_method :sync, :add_destination
     
     # sync to another Tempo object
     def sync_to(tempo)
