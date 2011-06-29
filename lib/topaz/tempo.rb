@@ -80,18 +80,22 @@ module Topaz
     # or clock message
     #
     def start(options = {})
-      @start_time = Time.now
-      @destinations.each { |dest| dest.start(:parent => self) }
-      @source.start(options) if options[:parent].nil?
-      @actions[:start].call unless @actions[:start].nil?
+      if @start_time.nil?
+        @start_time = Time.now
+        @destinations.each { |dest| dest.start(:parent => self) }
+        @source.start(options) if options[:parent].nil?
+        @actions[:start].call unless @actions[:start].nil?
+      end
     end
     
     # this will stop tempo
     def stop(options = {})
-      @destinations.each { |dest| dest.stop(:parent => self) }
-      @source.stop(options) if options[:parent].nil?
-      @actions[:stop].call unless @actions[:stop].nil?
-      @start_time = nil
+      unless @start_time.nil?
+        @destinations.each { |dest| dest.stop(:parent => self) }
+        @source.stop(options) if options[:parent].nil?
+        @actions[:stop].call unless @actions[:stop].nil?
+        @start_time = nil
+      end
     end
     
     # seconds since start was called
@@ -104,6 +108,7 @@ module Topaz
     # accepts MIDISyncOutput or another Tempo object
     def add_destination(tempo)
       @destinations << tempo
+      @start_time.nil? ? tempo.stop : tempo.start
     end
     alias_method :<<, :add_destination
     alias_method :sync_from, :add_destination
