@@ -60,14 +60,22 @@ module Topaz
       @actions[:stop] = block
     end
     
-    # pass in a callback which will 
+    # pass in a callback which will stop the clock if it evaluates to true 
     def stop_when(&block)
-      @actions[:stop_when] = block
+      proc = Proc.new do
+        if yield
+          stop
+          true
+        else
+          false
+        end 
+      end
+      @actions[:stop_when] = proc
     end
     
     # pass in a callback which will be fired on each tick
     def on_tick(&block)
-      proc = Proc.new do |dests|
+      proc = Proc.new do
         @destinations.each { |d| d.send(:tick) if d.respond_to?(:tick) }
         yield
       end
@@ -80,22 +88,18 @@ module Topaz
     # or clock message
     #
     def start(options = {})
-      if @start_time.nil?
-        @start_time = Time.now
-        @destinations.each { |dest| dest.start(:parent => self) }
-        @source.start(options) if options[:parent].nil?
-        @actions[:start].call unless @actions[:start].nil?
-      end
+      @start_time = Time.now
+      @destinations.each { |dest| dest.start(:parent => self) }
+      @source.start(options) if options[:parent].nil?
+      @actions[:start].call unless @actions[:start].nil?
     end
     
     # this will stop tempo
     def stop(options = {})
-      unless @start_time.nil?
-        @destinations.each { |dest| dest.stop(:parent => self) }
-        @source.stop(options) if options[:parent].nil?
-        @actions[:stop].call unless @actions[:stop].nil?
-        @start_time = nil
-      end
+      @destinations.each { |dest| dest.stop(:parent => self) }
+      @source.stop(options) if options[:parent].nil?
+      @actions[:stop].call unless @actions[:stop].nil?
+      @start_time = nil
     end
     
     # seconds since start was called

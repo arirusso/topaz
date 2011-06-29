@@ -18,12 +18,12 @@ class InternalTempoTest < Test::Unit::TestCase
     assert_equal(count_to, i)
   end
   
-  def test_change_on_click
+  def test_change_on_tick
     i = 0
     count_to = 5
     
     tempo = Tempo.new(120) { i += 1 }
-    tempo.stop_when { i.eql?(count_to) }
+    tempo.stop_when { i == count_to }
     tempo.start
     
     assert_equal(count_to, i)
@@ -32,7 +32,7 @@ class InternalTempoTest < Test::Unit::TestCase
     count_to = 1000
     
     tempo.on_tick { i += 100 }
-    tempo.stop_when { i.eql?(count_to) }
+    tempo.stop_when { i == count_to }
     tempo.start
     
     assert_equal(count_to, i)
