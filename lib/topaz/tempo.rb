@@ -89,15 +89,15 @@ module Topaz
     #
     def start(options = {})
       @start_time = Time.now
-      @destinations.each { |dest| dest.start(:parent => self) }
-      @source.start(options) if options[:parent].nil?
+      @destinations.each { |dest| dest.start }
+      @source.start(options)
       @actions[:start].call unless @actions[:start].nil?
     end
     
     # this will stop tempo
     def stop(options = {})
-      @destinations.each { |dest| dest.stop(:parent => self) }
-      @source.stop(options) if options[:parent].nil?
+      @destinations.each { |dest| dest.stop }
+      @source.stop(options)
       @actions[:stop].call unless @actions[:stop].nil?
       @start_time = nil
     end
@@ -109,25 +109,12 @@ module Topaz
     alias_method :time_since_start, :time
     
     # add a destination
-    # accepts MIDISyncOutput or another Tempo object
-    def add_destination(tempo)
-      @destinations << tempo
-      @start_time.nil? ? tempo.stop(:parent => self) : tempo.start(:parent => self)
+    # accepts MIDISyncOutput
+    def add_destination(dest)
+      @destinations << dest
     end
-    alias_method :<<, :add_destination
-    alias_method :sync, :add_destination
-    
-    # sync to another Tempo object
-    def sync_to(tempo)
-      tempo.add_destination(self)
-    end
-    
-    # remove all sync connections to <em>tempo</em>
-    def unsync(tempo)
-      @destinations.delete(tempo)
-      tempo.unsync(self)
-    end
-    
+    #alias_method :<<, :add_destination
+        
     protected
     
     def tick
