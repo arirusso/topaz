@@ -112,7 +112,7 @@ module Topaz
     # accepts MIDISyncOutput or another Tempo object
     def add_destination(tempo)
       @destinations << tempo
-      @start_time.nil? ? tempo.stop : tempo.start
+      @start_time.nil? ? tempo.stop(:parent => self) : tempo.start(:parent => self)
     end
     alias_method :<<, :add_destination
     alias_method :sync_from, :add_destination
