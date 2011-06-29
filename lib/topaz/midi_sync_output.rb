@@ -3,6 +3,8 @@ module Topaz
   
   # send sync messages via MIDI
   class MIDISyncOutput
+    
+    attr_reader :output
      
     def initialize(output, options = {})
       @output = output

@@ -109,11 +109,24 @@ module Topaz
     alias_method :time_since_start, :time
     
     # add a destination
-    # accepts MIDISyncOutput
+    # accepts UniMIDI::Output or array of
     def add_destination(dest)
-      @destinations << dest
+      dest = [dest].flatten.compact
+      dest.each do |d|
+        @destinations << MIDISyncOutput.new(d)
+      end
     end
-    #alias_method :<<, :add_destination
+
+    # remove a destination
+    # accepts UniMIDI::Output or array of
+    def remove_destination(dest)
+      dest = [dest].flatten.compact
+      dest.each do |output|
+        @destinations.each do |sync_output|
+          @destinations.delete(sync_output) if sync_output.output == output
+        end
+      end
+    end
         
     protected
     
