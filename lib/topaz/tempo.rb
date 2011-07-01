@@ -10,7 +10,7 @@ module Topaz
     
     def_delegators :source, :tempo, :interval, :interval=, :join
   
-    def initialize(*args, &event)
+    def initialize(tempo_or_input, options = {}, &event)
       @paused = false
       @destinations = []      
       @actions = { 
@@ -23,17 +23,16 @@ module Topaz
       
       on_tick(&event)
 
-      if args.first.kind_of?(Numeric)
-        @source = InternalTempo.new(@actions, args.shift)
+      if tempo_or_input.kind_of?(Numeric)
+        @source = InternalTempo.new(@actions, tempo_or_input)
+      else      
+        midi_clock_source = tempo_or_input
       end
-      options = args.first
-      
-      initialize_midi_io(options)
+       
+      initialize_midi_io(options[:midi], midi_clock_source)
       raise "You must specify an internal tempo rate or an external tempo source" if @source.nil?
-      
-      unless options.nil?        
-        @source.interval = options[:interval] unless options[:interval].nil?      
-      end
+              
+      @source.interval = options[:interval] unless options[:interval].nil?      
       
     end
     
@@ -157,15 +156,13 @@ module Topaz
     
     private
         
-    def initialize_midi_io(args)
-      ports = args.kind_of?(Hash) ? args[:midi] : args
-      unless ports.nil?
-        if ports.kind_of?(Array) 
-          ports.each { |port| initialize_midi_io(port) }
-        elsif ports.type.eql?(:input) && @source.nil?
-          @source = ExternalMIDITempo.new(@actions, ports) 
-        elsif ports.type.eql?(:output)
-          @destinations << MIDISyncOutput.new(ports)
+    def initialize_midi_io(midi_ports, midi_clock = nil)
+      @source = ExternalMIDITempo.new(@actions, midi_clock) unless midi_clock.nil? || !@source.nil?
+      unless midi_ports.nil?
+        if midi_ports.kind_of?(Array) 
+          midi_ports.each { |port| initialize_midi_io(port) }
+        elsif midi_ports.type.eql?(:output)
+          @destinations << MIDISyncOutput.new(midi_ports)
         end
       end
     end    

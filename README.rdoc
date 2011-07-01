@@ -42,7 +42,7 @@ You may also use another MIDI device to generate timing and control the tempo.  
 
   @input = UniMIDI::Input.first.open # an midi input 
   
-  @tempo = Topaz::Tempo.new(:midi => @input) { seq.step }
+  @tempo = Topaz::Tempo.new(@input) { seq.step }
         
 Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI start, stop and clock signals will automatically be sent to that output at the appropriate time
 
@@ -52,7 +52,7 @@ Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI 
   
 Input and multiple outputs can be used simultaneously
 
-  @tempo = Topaz::Tempo.new(:midi => [@input, @output1, @output2]) { seq.step }
+  @tempo = Topaz::Tempo.new(@input, :midi => [@output1, @output2]) { seq.step }
   
 Once the Tempo object is initialized, start the clock
 
