@@ -28,7 +28,7 @@ module Topaz
     end
     
     def stop(*a)
-      @clock.start(*a)
+      @clock.stop
       self
     end
     
