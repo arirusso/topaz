@@ -56,6 +56,11 @@ module Topaz
       @per_tick = 24 / per_qn
     end
     
+    # return the interval at which the tick event is fired
+    def interval
+      4 * (24 / @per_tick)
+    end
+    
     private
     
     def initialize_clock
