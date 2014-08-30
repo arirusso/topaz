@@ -1,7 +1,6 @@
-#!/usr/bin/env ruby
 module Topaz
   
-  # trigger an event based on received midi clock messages
+  # Trigger an event based on received midi clock messages
   class ExternalMIDITempo
     
     include TempoSource
@@ -10,14 +9,14 @@ module Topaz
   
     def initialize(actions, input, options = {})
       @actions = actions
-      self.interval = options[:interval] || 4
+      interval = options[:interval] || 4
       @tempo_calculator = TempoCalculator.new
       @clock = MIDIEye::Listener.new(input)
       
       initialize_clock 
     end
     
-    # this will return a calculated tempo
+    # This will return a calculated tempo
     def tempo
       @tempo_calculator.find_tempo
     end
@@ -56,7 +55,7 @@ module Topaz
       @per_tick = 24 / per_qn
     end
     
-    # return the interval at which the tick event is fired
+    # Return the interval at which the tick event is fired
     def interval
       4 * (24 / @per_tick)
     end
