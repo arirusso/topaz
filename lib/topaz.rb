@@ -10,7 +10,7 @@ require "midi-eye"
 require "midi-message"
 
 # classes
-require "topaz/tempo_source"
+require "topaz/events"
 require "topaz/external_midi_tempo"
 require "topaz/internal_tempo"
 require "topaz/midi_sync_output"
@@ -19,6 +19,6 @@ require "topaz/tempo"
 
 module Topaz
   
-  VERSION = "0.0.15"
+  VERSION = "0.1.1"
   
 end
