@@ -1,14 +1,10 @@
-#!/usr/bin/env ruby
-
 dir = File.dirname(File.expand_path(__FILE__))
-$LOAD_PATH.unshift dir + '/../lib'
+$LOAD_PATH.unshift dir + "/../lib"
 
-require 'test/unit'
-require 'topaz'
+require "test/unit"
+require "topaz"
 
-module TestHelper
-	
-  
+module TestHelper 
 end
 
-require File.dirname(__FILE__) + '/config'
+require File.dirname(__FILE__) + "/config"
