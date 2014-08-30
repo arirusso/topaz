@@ -1,7 +1,6 @@
-#!/usr/bin/env ruby
 module Topaz
   
-  # main tempo class
+  # Main tempo class
   class Tempo
     
     extend Forwardable
@@ -10,96 +9,73 @@ module Topaz
     
     def_delegators :source, :tempo, :interval, :interval=, :join
   
-    def initialize(tempo_or_input, options = {}, &event)
+    def initialize(tempo_or_input, options = {}, &tick_event)
       @paused = false
-      @destinations = []      
-      @actions = { 
-        :start => nil,
-        :stop => nil,
-        :tick => nil,        
-        :midi_clock => Proc.new { @destinations.each { |d| d.send(:midi_clock) if d.respond_to?(:midi_clock) } },
-        :stop_when => nil
-      }
-      
-      on_tick(&event)
+      @destinations = [] 
+      @events = Events.new
 
-      if tempo_or_input.kind_of?(Numeric)
-        @source = InternalTempo.new(@actions, tempo_or_input)
-      else      
-        midi_clock_source = tempo_or_input
-      end
-       
-      initialize_midi_io(options[:midi], midi_clock_source)
-      raise "You must specify an internal tempo rate or an external tempo source" if @source.nil?
-              
-      @source.interval = options[:interval] unless options[:interval].nil?      
-      
+      configure(tempo_or_input, options, &tick_event)     
     end
     
-    # this will change the tempo
+    # Change the tempo
     #
-    # be warned, in the case that external midi tempo is being used, this will switch to internal 
-    # tempo at the desired rate
+    # Caution that in the case that external MIDI tempo is being used, this will switch to internal 
+    # tempo at the desired rate.
     #
     def tempo=(val)
       if @source.respond_to?(:tempo=)
         @source.tempo = val
       else
-        @source = InternalTempo.new(tempo, @action)
+        @source = InternalTempo.new(@events, val)
       end 
     end
     
-    # pause the clock
+    # Pause the clock
     def pause
       @pause = true
     end
     
-    # unpause the clock
+    # Unpause the clock
     def unpause
       @pause = false
     end
     
-    # is this clock paused?
+    # Is this clock paused?
     def paused?
       @pause
     end
    
+    # Toggle pausing the clock
     def toggle_pause
       paused? ? unpause : pause      
     end
     
-    # pass in a callback that is called when start is called
-    def on_start(&block)
-      @actions[:start] = block
+    # Pass in a callback that is called when start is called
+    def on_start(&callback)
+      @events.start[0] = callback
     end
 
     # pass in a callback that is called when stop is called
-    def on_stop(&block)
-      @actions[:stop] = block
+    def on_stop(&callback)
+      @events.stop[0] = callback
     end
     
-    # pass in a callback which will stop the clock if it evaluates to true 
-    def stop_when(&block)
-      proc = Proc.new do
-        if yield
-          stop
-          true
-        else
-          false
-        end 
-      end
-      @actions[:stop_when] = proc
+    # Pass in a callback which will stop the clock if it evaluates to true 
+    def stop_when(&callback)
+      @events.stop_when = callback
     end
     
-    # pass in a callback which will be fired on each tick
-    def on_tick(&block)
-      proc = Proc.new do
+    # Pass in a callback which will be fired on each tick
+    def on_tick(&callback)
+      wrapper = Proc.new do
         unless paused?
-          @destinations.each { |d| d.send(:tick) if d.respond_to?(:tick) }
+          @destinations.each do |destination| 
+            destination.send(:tick) if destination.respond_to?(:tick)
+          end
           yield
         end
       end
-      @actions[:tick] = proc
+      @events.tick[0] = callback
     end
         
     # this will start the generator
@@ -109,39 +85,38 @@ module Topaz
     #
     def start(options = {})
       @start_time = Time.now
-      @destinations.each { |dest| dest.start }
+      @events.do_start
       @source.start(options)
-      @actions[:start].call unless @actions[:start].nil?
     end
     
-    # this will stop tempo
+    # This will stop the clock
     def stop(options = {})
-      @destinations.each { |dest| dest.stop }
       @source.stop(options)
-      @actions[:stop].call unless @actions[:stop].nil?
+      @events.do_stop
       @start_time = nil
     end
     
-    # seconds since start was called
+    # Seconds since start was called
     def time
-      @start_time.nil? ? nil : (Time.now - @start_time).to_f
+      (Time.now - @start_time).to_f unless @start_time.nil?
     end
     alias_method :time_since_start, :time
     
-    # add a destination
-    # accepts UniMIDI::Output or array of
-    def add_destination(dest)
-      dest = [dest].flatten.compact
-      dest.each do |d|
-        @destinations << MIDISyncOutput.new(d)
+    # Add a destination
+    # @param [Array<UniMIDI::Output>, UniMIDI::Output] destinations
+    def add_destination(destinations)
+      destinations = [destinations].flatten.compact
+      destinations.each do |destination|
+        output = MIDISyncOutput.new(destination) 
+        @destinations << output
       end
     end
 
-    # remove a destination
-    # accepts UniMIDI::Output or array of
-    def remove_destination(dest)
-      dest = [dest].flatten.compact
-      dest.each do |output|
+    # Remove a destination
+    # @param [Array<UniMIDI::Output>, UniMIDI::Output] destinations
+    def remove_destination(destinations)
+      destinations = [destinations].flatten.compact
+      destinations.each do |output|
         @destinations.each do |sync_output|
           @destinations.delete(sync_output) if sync_output.output == output
         end
@@ -151,21 +126,43 @@ module Topaz
     protected
     
     def tick
-      @actions[:tick].call
+      @events.do_tick
     end
     
     private
         
-    def initialize_midi_io(midi_ports, midi_clock = nil)
-      @source = ExternalMIDITempo.new(@actions, midi_clock) unless midi_clock.nil? || !@source.nil?
-      unless midi_ports.nil?
-        if midi_ports.kind_of?(Array) 
-          midi_ports.each { |port| initialize_midi_io(port) }
-        elsif midi_ports.type.eql?(:output)
-          @destinations << MIDISyncOutput.new(midi_ports)
-        end
+    def initialize_destinations(midi_outputs)
+      midi_outputs = [midi_outputs].flatten.compact
+      midi_outputs.each do |output|
+        add_destination(output)
       end
-    end    
+    end
+
+    def initialize_midi_clock_output
+      [:clock, :start, :stop].each do |event|
+        action = Proc.new do
+          @destinations.each { |destination| destination.send(event) }
+        end
+        @events.send("midi_#{event.to_s}=", action)
+      end
+    end
+
+    def initialize_tempo_source(tempo_or_input)
+      @source = case tempo_or_input
+        when Numeric then InternalTempo.new(@events, tempo_or_input)
+        when UniMIDI::Input then ExternalMIDITempo.new(@events, tempo_or_input)
+      else
+        raise "You must specify an internal tempo rate or an external tempo source"
+      end
+    end
+
+    def configure(tempo_or_input, options = {}, &tick_event)
+      initialize_tempo_source(tempo_or_input)     
+      initialize_destinations(options[:midi]) unless options[:midi].nil?
+      initialize_midi_clock_output
+      @source.interval = options[:interval] unless options[:interval].nil? 
+      on_tick(&tick_event)
+    end
     
   end
   
