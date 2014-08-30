@@ -50,21 +50,25 @@ You may also use another MIDI device to generate timing and control the tempo.  
 Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI start, stop and clock signals will automatically be sent to that output at the appropriate time
 
 ```ruby
-  @output = UniMIDI::Output.first.open # a midi output 
+@output = UniMIDI::Output.first.open # a midi output 
   
-  @tempo = Topaz::Tempo.new(120, :midi => @output) { sequencer.step }
+@tempo = Topaz::Tempo.new(120, :midi => @output) do
+  sequencer.step
+end
 ```
 
 Input and multiple outputs can be used simultaneously
 
 ```ruby
-@tempo = Topaz::Tempo.new(@input, :midi => [@output1, @output2]) { sequencer.step }
+@tempo = Topaz::Tempo.new(@input, :midi => [@output1, @output2]) do 
+  sequencer.step
+end
 ```
 
 Once the Tempo object is initialized, start the clock
 
 ```ruby
-  @tempo.start
+@tempo.start
 ```
 
 If you are syncing to external clock, nothing will happen until a "start" or "clock" message is received
