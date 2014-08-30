@@ -1,28 +1,30 @@
-#!/usr/bin/env ruby
 module Topaz
   
-  # send sync messages via MIDI
+  # Send clock messages via MIDI
   class MIDISyncOutput
     
     attr_reader :output
      
-    def initialize(output, options = {})
+    def initialize(output)
       @output = output
     end
     
-    # send a start message
+    # Send a start message
     def start(*a)
-      @output.puts(MIDIMessage::SystemRealtime["Start"].new.to_a)
+      start = MIDIMessage::SystemRealtime["Start"].new.to_a
+      @output.puts(start)
     end
 
-    # send a stop message
+    # Send a stop message
     def stop(*a)
-      @output.puts(MIDIMessage::SystemRealtime["Stop"].new.to_a)
+      stop = MIDIMessage::SystemRealtime["Stop"].new.to_a
+      @output.puts(stop)
     end
         
-    # send a clock message
-    def midi_clock(*a)
-      @output.puts(MIDIMessage::SystemRealtime["Clock"].new.to_a)
+    # Send a clock tick message
+    def clock(*a)
+      clock = MIDIMessage::SystemRealtime["Clock"].new.to_a
+      @output.puts(clock)
     end
     
   end
