@@ -3,17 +3,19 @@
 # (c)2011-2014 Ari Russo and licensed under the Apache 2.0 License
 # 
 
-require 'forwardable'
-require 'gamelan'
-require 'midi-eye'
-require 'midi-message'
+# libs
+require "forwardable"
+require "gamelan"
+require "midi-eye"
+require "midi-message"
 
-require 'topaz/tempo_source'
-require 'topaz/external_midi_tempo'
-require 'topaz/internal_tempo'
-require 'topaz/midi_sync_output'
-require 'topaz/tempo_calculator'
-require 'topaz/tempo'
+# classes
+require "topaz/tempo_source"
+require "topaz/external_midi_tempo"
+require "topaz/internal_tempo"
+require "topaz/midi_sync_output"
+require "topaz/tempo_calculator"
+require "topaz/tempo"
 
 module Topaz
   
