@@ -1,12 +1,9 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), '../lib')
+$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
-require 'topaz'
+require "topaz"
 
-# initialize the midi output to send sync to
-@output = UniMIDI::Output.first.open
-
-# a fake little sequencer for demonstration
+# A mock sequencer for demonstration
 class Sequencer
   
   def step
@@ -16,8 +13,11 @@ class Sequencer
   
 end
 
-seq = Sequencer.new
+# Have the user select a MIDI output
+@output = UniMIDI::Output.gets
 
-# this sets 8th note = 132 bpm.  the default value is quarter note (or 4)
-@tempo = Topaz::Tempo.new(132, :interval => 8, :midi => @output) { seq.step }
+sequencer = Sequencer.new
+
+# This sets 8th note = 132 bpm.  the default value is quarter note (or 4)
+@tempo = Topaz::Tempo.new(132, :interval => 8, :midi => @output) { sequencer.step }
 @tempo.start

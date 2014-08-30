@@ -1,14 +1,15 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), '../lib')
-require 'topaz'
-# this example will sync to a MIDI input, as well as send the sync messages to another output
+$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
-# first, initialize the MIDI input port
-@input = UniMIDI::Input.first.open
-# initialize the midi output to send sync to
-@output = UniMIDI::Output.first.open
+require "topaz"
 
-# a fake little sequencer for demonstration
+# This example will sync to a MIDI input, as well as send the sync messages to another output
+
+# First, have the user select MIDI input and output
+@input = UniMIDI::Input.gets
+@output = UniMIDI::Output.gets
+
+# Mock sequencer
 class Sequencer
   
   def step
@@ -18,6 +19,6 @@ class Sequencer
   
 end
 
-seq = Sequencer.new
-@tempo = Topaz::Tempo.new(@input, :midi => [@output]) { seq.step }
+sequencer = Sequencer.new
+@tempo = Topaz::Tempo.new(@input, :midi => [@output]) { sequencer.step }
 @tempo.start

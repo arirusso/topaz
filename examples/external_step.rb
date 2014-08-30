@@ -1,12 +1,9 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), '../lib')
+$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
-require 'topaz'
+require "topaz"
 
-# first, initialize the MIDI input port
-@input = UniMIDI::Input.first.open
-
-# a mock sequencer for demonstration
+# A mock sequencer for demonstration
 class Sequencer
   
   def step
@@ -16,6 +13,15 @@ class Sequencer
   
 end
 
-seq = Sequencer.new
-@tempo = Topaz::Tempo.new(@input) { seq.step; p "tempo: #{@tempo.tempo}" }
+# First, have the user select a MIDI port
+@input = UniMIDI::Input.gets
+
+sequencer = Sequencer.new
+
+@tempo = Topaz::Tempo.new(@input) do 
+  sequencer.step 
+  puts "tempo: #{@tempo.tempo}"
+end
+
+puts "Waiting for MIDI clock..."
 @tempo.start

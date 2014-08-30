@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), '../lib')
+$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
-require 'topaz'
+require "topaz"
 
-# a mock sequencer for demonstration
+# A mock sequencer for demonstration
 class Sequencer
   
   def step
@@ -15,6 +15,6 @@ end
 
 seq = Sequencer.new
 
-# this sets 8th note = 132 bpm.  the default value is quarter note (or 4)
+# This sets 8th note = 132 bpm.  The default value is quarter note (or 4)
 @tempo = Topaz::Tempo.new(132, :interval => 8) { seq.step }
 @tempo.start
