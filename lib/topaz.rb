@@ -1,7 +1,6 @@
-#!/usr/bin/env ruby
 #
 # MIDI syncable tempo module in Ruby
-# (c)2011 Ari Russo and licensed under the Apache 2.0 License
+# (c)2011-2014 Ari Russo and licensed under the Apache 2.0 License
 # 
 
 require 'forwardable'
