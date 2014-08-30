@@ -1,17 +1,13 @@
-#!/usr/bin/env ruby
 module Topaz
 
   class InternalTempo < Gamelan::Timer
-    
-    include TempoSource
-    
-    attr_accessor :action
-    
-    def initialize(actions, tempo, options = {})
-      @actions = actions
-      self.interval = options[:interval] || 4 
+            
+    def initialize(events, tempo, options = {})
+      @events = events
       @last = 0
       @last_sync = 0
+      self.interval = options[:interval] || 4 
+      
       super({:tempo => tempo})
     end
 
@@ -19,7 +15,7 @@ module Topaz
     # pass :background => true to keep the timer in a background thread
     def start(options = {})
       run
-      join unless options[:background]
+      join unless !!options[:background]
       self
     end
     
@@ -50,13 +46,13 @@ module Topaz
       # stuff to do on every tick      
       if time_for_midi_clock?
         # look for stop
-        (stop and return) if stop?
-        do_midi_clock        
+        (stop and return) if @events.stop?
+        @events.do_midi_clock        
         @last_sync = (@phase * 24).to_i
       end
       # stuff to do on @interval
       if time_for_tick?
-        do_tick
+        @events.do_tick
         @last = (@phase * @interval).to_i
       end      
     end
