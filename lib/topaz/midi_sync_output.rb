@@ -17,6 +17,7 @@ module Topaz
 
     # Send a stop message
     def stop(*a)
+      p "hi"
       stop = MIDIMessage::SystemRealtime["Stop"].new.to_a
       @output.puts(stop)
     end

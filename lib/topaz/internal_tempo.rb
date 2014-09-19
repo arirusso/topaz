@@ -40,7 +40,23 @@ module Topaz
     end
     
     protected
-    
+
+    # Initialize the scheduler's clock, and begin executing tasks.
+    def run
+      return if @running
+      @running  = true
+      @thread   = Thread.new do
+        begin
+          @phase  = 0.0
+          @origin = @time = Time.now.to_f
+          loop { dispatch; advance }
+        rescue Exception => exception
+          Thread.main.raise(exception)
+        end
+      end
+      @thread.abort_on_exception = true
+    end 
+
     # Run all ready tasks.
     def dispatch
       # stuff to do on every tick      

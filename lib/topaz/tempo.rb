@@ -67,15 +67,12 @@ module Topaz
     
     # Pass in a callback which will be fired on each tick
     def on_tick(&callback)
-      wrapper = Proc.new do
+      wrapper = proc do
         unless paused?
-          @destinations.each do |destination| 
-            destination.send(:tick) if destination.respond_to?(:tick)
-          end
           yield
         end
       end
-      @events.tick[0] = callback
+      @events.tick[0] = wrapper
     end
         
     # this will start the generator
@@ -84,9 +81,13 @@ module Topaz
     # or clock message
     #
     def start(options = {})
-      @start_time = Time.now
-      @events.do_start
-      @source.start(options)
+      begin
+        @start_time = Time.now
+        @events.do_start
+        @source.start(options)
+      rescue SystemExit, Interrupt => exception
+        stop
+      end
     end
     
     # This will stop the clock
@@ -122,13 +123,7 @@ module Topaz
         end
       end
     end
-        
-    protected
-    
-    def tick
-      @events.do_tick
-    end
-    
+            
     private
         
     def initialize_destinations(midi_outputs)
@@ -140,7 +135,7 @@ module Topaz
 
     def initialize_midi_clock_output
       [:clock, :start, :stop].each do |event|
-        action = Proc.new do
+        action = proc do
           @destinations.each { |destination| destination.send(event) }
         end
         @events.send("midi_#{event.to_s}=", action)
