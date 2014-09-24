@@ -5,10 +5,13 @@ module Topaz
       
     attr_reader :clock
   
-    def initialize(event, input, options = {})
-      @event = event
+    # @param [UniMIDI::Input] input
+    # @param [Hash] options
+    # @option options [Tempo::Event] :event
+    def initialize(input, options = {})
+      @event = options[:event]
       @tempo_calculator = TempoCalculator.new
-      interval = options[:interval] || 4
+      self.interval = options.fetch(:interval, 4)
 
       initialize_listener(input)
     end
@@ -65,10 +68,10 @@ module Topaz
       @counter = 0
       # Note that this doesn't wait for a start signal
       @listener.listen_for(:name => "Clock") do |message|        
-        @event.do_clock # thru
+        !@event.nil? && @event.do_clock # thru
         @tempo_calculator.timestamps << message[:timestamp]
         if @counter.eql?(@per_tick)
-          @event.do_tick
+          !@event.nil? && @event.do_tick
           @counter = 0 
         else
           @counter += 1

@@ -16,7 +16,7 @@ module Topaz
       @midi_clock_output = MIDIClockOutput.new(options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
-      @source = TempoSource.new(tempo_or_input, @event, options) 
+      @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event })) 
       initialize_events(&tick_event)
     end
 
