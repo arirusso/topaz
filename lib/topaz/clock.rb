@@ -3,10 +3,9 @@ module Topaz
   # The main tempo clock
   class Clock
 
-    extend Forwardable
+    include API
 
     attr_reader :event, :midi_clock_output, :source, :trigger
-    def_delegators :source, :interval, :interval=, :join, :pause, :pause?, :paused?, :running?, :tempo, :toggle_pause, :unpause
 
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
@@ -69,7 +68,6 @@ module Topaz
     def time
       (Time.now - @start_time).to_f unless @start_time.nil?
     end
-    alias_method :time_since_start, :time
 
     private
 
