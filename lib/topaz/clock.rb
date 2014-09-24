@@ -1,7 +1,7 @@
 module Topaz
 
-  # Main tempo class
-  class Tempo
+  # The main tempo clock
+  class Clock
 
     extend Forwardable
 
@@ -204,5 +204,7 @@ module Topaz
     end
 
   end
+
+  Tempo = Clock # For backwards compat
 
 end
