@@ -11,6 +11,7 @@ module Topaz
     # @option options [Clock::Event] :event
     def initialize(input, options = {})
       @event = options[:event]
+      @pause = false
       @running = false
       @tempo_calculator = TempoCalculator.new
       self.interval = options.fetch(:interval, 4)
@@ -75,7 +76,7 @@ module Topaz
         !@event.nil? && @event.do_clock # thru
         @tempo_calculator.timestamps << message[:timestamp]
         if @counter.eql?(@per_tick)
-          !@event.nil? && @event.do_tick
+          !@event.nil? && !@pause && @event.do_tick
           @counter = 0 
         else
           @counter += 1

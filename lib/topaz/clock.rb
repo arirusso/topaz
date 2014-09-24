@@ -6,13 +6,12 @@ module Topaz
     extend Forwardable
 
     attr_reader :event, :midi_clock_output, :source, :trigger
-    def_delegators :source, :interval, :interval=, :join, :running?, :tempo
+    def_delegators :source, :interval, :interval=, :join, :pause, :pause?, :paused?, :running?, :tempo, :toggle_pause, :unpause
 
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
     # @param [Proc] tick_event
     def initialize(tempo_or_input, options = {}, &tick_event)
-      @paused = false
       @midi_clock_output = MIDIClockOutput.new(options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
@@ -32,30 +31,6 @@ module Topaz
       else
         @source = TempoSource.new(event, tempo_or_input)
       end
-    end
-
-    # Pause the clock
-    # @return [Boolean]
-    def pause
-      @pause = true
-    end
-
-    # Unpause the clock
-    # @return [Boolean]
-    def unpause
-      @pause = false
-    end
-
-    # Is this clock paused?
-    # @return [Boolean]
-    def paused?
-      @pause
-    end
-
-    # Toggle pausing the clock
-    # @return [Boolean]
-    def toggle_pause
-      @pause = !@pause      
     end
 
     # This will start the clock source
@@ -103,15 +78,13 @@ module Topaz
     # @param [Proc] block
     # @return [Clock::Event]
     def initialize_events(&block)
-      wrapper = proc do 
-        if block_given? && !paused?
-          yield
-        end
-      end
-      @event.tick << wrapper
+      @event.tick << block if block_given?
       clock = proc do 
-        (stop and return) if @trigger.stop?
-        @midi_clock_output.do_clock
+        if @trigger.stop?
+          stop
+        else
+          @midi_clock_output.do_clock
+        end
       end
       @event.clock = clock
       @event

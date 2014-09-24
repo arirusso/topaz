@@ -2,6 +2,8 @@ module Topaz
 
   class Timer < Gamelan::Timer
 
+    include Pausable
+
     attr_reader :phase, :running
     alias_method :running?, :running
 
@@ -12,6 +14,7 @@ module Topaz
       @event = options[:event]
       @last_tick_event = 0
       @last_midi_clock = 0
+      @pause = false
       @running = false
       self.interval = options[:interval] || 4 
       
@@ -91,7 +94,7 @@ module Topaz
       end
       # Stuff to do on @interval
       if time_for_tick?
-        !@event.nil? && @event.do_tick
+        !@event.nil? && !@pause && @event.do_tick
         @last_tick_event = (@phase * @interval).to_i
         true
       end

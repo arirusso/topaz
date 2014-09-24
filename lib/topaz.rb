@@ -10,6 +10,7 @@ require "midi-eye"
 require "midi-message"
 
 # modules
+require "topaz/pausable"
 require "topaz/tempo_source"
 
 # classes
