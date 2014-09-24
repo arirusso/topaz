@@ -2,16 +2,20 @@ module Topaz
 
   class Timer < Gamelan::Timer
 
+    attr_reader :phase, :running
+    alias_method :running?, :running
+
     # @param [Fixnum] tempo
     # @param [Hash] options
-    # @option options [Tempo::Event] :event
+    # @option options [Clock::Event] :event
     def initialize(tempo, options = {})
       @event = options[:event]
       @last_tick_event = 0
       @last_midi_clock = 0
+      @running = false
       self.interval = options[:interval] || 4 
       
-      super({:tempo => tempo})
+      super({ :tempo => tempo })
     end
 
     # Start the internal timer
@@ -57,10 +61,10 @@ module Topaz
     # @return [Boolean]
     def run
       unless @running
-        @running = true
         @thread = Thread.new do
+          @running = true
           begin
-            @phase  = 0.0
+            @phase = 0.0
             @origin = @time = Time.now.to_f
             loop do 
               dispatch 

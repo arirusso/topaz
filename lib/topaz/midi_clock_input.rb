@@ -3,13 +3,15 @@ module Topaz
   # Trigger an event based on received midi clock messages
   class MIDIClockInput
       
-    attr_reader :clock
+    attr_reader :clock, :running
+    alias_method :running?, :running
   
     # @param [UniMIDI::Input] input
     # @param [Hash] options
-    # @option options [Tempo::Event] :event
+    # @option options [Clock::Event] :event
     def initialize(input, options = {})
       @event = options[:event]
+      @running = false
       @tempo_calculator = TempoCalculator.new
       self.interval = options.fetch(:interval, 4)
 
@@ -21,12 +23,14 @@ module Topaz
       @tempo_calculator.find_tempo
     end
     
-    def start(*a)      
+    def start(*a)  
+      @running = true
       @listener.start(*a)
       self
     end
     
     def stop(*a)
+      @running = false
       @listener.stop
       self
     end

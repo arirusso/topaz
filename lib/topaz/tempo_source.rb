@@ -8,7 +8,7 @@ module Topaz
     # Construct a tempo source
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
-    # @option options [Tempo::Event] :event
+    # @option options [Clock::Event] :event
     # @return [MIDIClockInput, Timer]
     def new(tempo_or_input, options = {})
       klass = case tempo_or_input

@@ -6,7 +6,7 @@ module Topaz
     extend Forwardable
 
     attr_reader :event, :midi_clock_output, :source, :trigger
-    def_delegators :source, :tempo, :interval, :interval=, :join
+    def_delegators :source, :interval, :interval=, :join, :running?, :tempo
 
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
@@ -55,15 +55,16 @@ module Topaz
     # Toggle pausing the clock
     # @return [Boolean]
     def toggle_pause
-      paused? ? unpause : pause      
+      @pause = !@pause      
     end
 
-    # This will start the generator
+    # This will start the clock source
     #
     # In the case that external midi tempo is being used, this will wait for a start 
     # or clock message
     #
     # @param [Hash] options
+    # @option options [Boolean] :background Whether to run the timer in a background thread (default: false)
     # @return [Boolean]
     def start(options = {})
       @start_time = Time.now
@@ -97,6 +98,10 @@ module Topaz
 
     private
 
+    # Initialize the tick and MIDI clock events so that they can be passed to the source
+    # and fired when needed
+    # @param [Proc] block
+    # @return [Clock::Event]
     def initialize_events(&block)
       wrapper = proc do 
         if block_given? && !paused?
@@ -109,6 +114,7 @@ module Topaz
         @midi_clock_output.do_clock
       end
       @event.clock = clock
+      @event
     end
 
     # Trigger clock events
