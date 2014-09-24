@@ -1,51 +1,56 @@
 require "helper"
 
-class InternalTempoTest < Test::Unit::TestCase
+class Topaz::TimerTest < Test::Unit::TestCase
 
-  include Topaz
-  include TestHelper
-  
-  def test_stop_when
-    i = 0
-    count_to = 5
-    
-    tempo = Tempo.new(120) { i += 1 }
-    tempo.trigger.stop { i.eql?(count_to) }
-    tempo.start
-    
-    assert_equal(count_to, i)
-  end
-  
-  def test_change_on_tick
-    i = 0
-    count_to = 5
-    
-    tempo = Tempo.new(120) { i += 1 }
-    tempo.trigger.stop { i == count_to }
-    tempo.start
-    
-    assert_equal(count_to, i)
-    
-    i = 0
-    count_to = 1000
-    
-    tempo.event.tick { i += 100 }
-    tempo.trigger.stop { i == count_to }
-    tempo.start
-    
-    assert_equal(count_to, i)
+  context "Timer" do
 
-    
-  end
+    setup do
+      @timer = Topaz::Timer.new(120)
+    end
 
-  def test_internal_interval
-    tempo = Tempo.new(120)
-    
-    assert_equal(4, tempo.interval)
+    context "#start" do
 
-    tempo.interval = 8
+      should "start running" do
+        assert_nil @timer.phase
+        @timer.start(:background => true)
+        loop until @timer.running?
+
+        assert @timer.running?
+        assert_not_nil @timer.phase
+        assert_not_equal 0.0, @timer.phase
+      end
+
+    end
+
+    context "#stop" do
+
+      setup do
+        assert_nil @timer.phase
+        @timer.start(:background => true)
+        loop until @timer.running?
+
+        assert @timer.running?
+      end
+
+      should "stop running" do
+        assert_not_nil @timer.phase
+        assert_not_equal 0.0, @timer.phase
+        @timer.stop
+        refute @timer.running?
+      end
+
+    end
     
-    assert_equal(8, tempo.interval)
+    context "#interval=" do
+
+      should "change interval" do
+        assert_equal(4, @timer.interval)
+        @timer.interval = 8
+        assert_equal(8, @timer.interval)
+      end
+
+    end
+
   end
 
 end

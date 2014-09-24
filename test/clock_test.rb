@@ -10,39 +10,6 @@ class Topaz::ClockTest < Test::Unit::TestCase
       @tempo = Topaz::Clock.new(120) { @counter += 1 }
     end
 
-    context "#stop" do
-
-      setup do
-        @tempo.trigger.stop { @counter.eql?(@count_to) }
-      end
-
-      should "stop" do
-        @tempo.start
-
-        assert_equal(@count_to, @counter)
-      end
-    end
-
-    context "#tick" do
-
-      should "change tick" do
-        @tempo.trigger.stop { @counter == @count_to }
-        @tempo.start
-
-        assert_equal(@count_to, @counter)
-
-        @counter = 0
-        @count_to = 1000
-
-        @tempo.event.tick { @counter += 100 }
-        @tempo.trigger.stop { @counter == @count_to }
-        @tempo.start
-
-        assert_equal(@count_to, @counter)
-      end
-
-    end
-
     context "#interval=" do
 
       should "change interval" do
@@ -52,6 +19,44 @@ class Topaz::ClockTest < Test::Unit::TestCase
       end
 
     end
+
+    context "Event" do
+
+      context "#tick" do
+
+        should "change tick" do
+          @is_running = false
+          @tempo.event.tick { @is_running = true }
+          refute @is_running
+
+          @tempo.start(:background => true)
+          loop until @tempo.running?
+          loop until @is_running
+
+        end
+
+      end
+
+    end
+
+    context "Trigger" do
+
+      context "#stop" do
+
+        setup do
+          @tempo.trigger.stop { @counter.eql?(@count_to) }
+        end
+
+        should "stop" do
+          @tempo.start
+          assert_equal(@count_to, @counter)
+        end
+
+      end
+
+    end
+
+
 
   end
 end
