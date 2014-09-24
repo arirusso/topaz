@@ -62,10 +62,8 @@ module Topaz
     def run
       unless @running
         @thread = Thread.new do
-          @running = true
           begin
-            @phase = 0.0
-            @origin = @time = Time.now.to_f
+            initialize_running_state
             loop do 
               dispatch 
               advance
@@ -100,6 +98,13 @@ module Topaz
     end
     
     private
+
+    def initialize_running_state
+      @running = true
+      @phase = 0.0
+      @origin = @time = Time.now.to_f
+      true
+    end
     
     # Is the current phase appropriate for MIDI clock output?
     # @return [Boolean]
