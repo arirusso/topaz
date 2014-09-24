@@ -34,8 +34,8 @@ module Topaz
 
     # This will start the clock source
     #
-    # In the case that external midi tempo is being used, this will wait for a start 
-    # or clock message
+    # In the case that external midi tempo is being used, this will instead start the process
+    # of waiting for a start or clock message
     #
     # @param [Hash] options
     # @option options [Boolean] :background Whether to run the timer in a background thread (default: false)
@@ -52,7 +52,7 @@ module Topaz
       true
     end
 
-    # This will stop the clock
+    # This will stop the clock source
     # @param [Hash] options
     # @return [Boolean]
     def stop(options = {})

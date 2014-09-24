@@ -3,7 +3,7 @@ module Topaz
   # Calculate tempo given timestamps
   class TempoCalculator
 
-    THRESHOLD = 6 # minimum number of ticks to analyze
+    THRESHOLD = 6 # Optimal number of ticks to analyze
     
     attr_reader :tempo, :timestamps
     
@@ -13,25 +13,33 @@ module Topaz
     end
     
     # Analyze the tempo based on the threshold
-    def find_tempo
+    # @return [Fixnum]
+    def calculate
       tempo = nil
-      diffs = []
-      @timestamps.shift while @timestamps.length > THRESHOLD
-      @timestamps.each_with_index { |n, i| (diffs << (@timestamps[i+1] - n)) unless @timestamps[i+1].nil? }
-      unless diffs.empty?
-        avg = (diffs.inject { |a, b| a + b }.to_f / diffs.length.to_f) 
-        tempo = ppq24_millis_to_bpm(avg)
-      end 
-      @tempo = tempo
+      if @timestamps.count >= 2
+        @timestamps.slice!(-THRESHOLD.end, THRESHOLD.end)
+        deltas = []
+        @timestamps.each_with_index do |timestamp, i| 
+          if i <= @timestamps.length - 1
+            deltas << (@timestamps[i+1] - timestamp)
+          end
+        end
+        sum = deltas.inject(&:+)
+        average = sum.to_f / deltas.length
+        bpm = ppq24_millis_to_bpm(average)
+        @tempo = bpm
+      end
     end
     
     private
     
-    # convert the raw tick intervals to bpm
+    # Convert the raw tick intervals to beats-per-minute (BPM)
+    # @param [Float] ppq24 
+    # @return [Float]
     def ppq24_millis_to_bpm(ppq24)
-      quarter_note = (ppq24 * 24.to_f)
-      minute = (60 * 1000) # one minute in millis
-      minute/quarter_note
+      quarter_note = ppq24 * 24.to_f
+      minute = 60 * 1000 # one minute in millis
+      minute / quarter_note
     end
     
   end

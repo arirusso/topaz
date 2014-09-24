@@ -3,6 +3,8 @@ module Topaz
   # Trigger an event based on received midi clock messages
   class MIDIClockInput
       
+    include Pausable
+
     attr_reader :clock, :running
     alias_method :running?, :running
   
@@ -20,8 +22,9 @@ module Topaz
     end
     
     # This will return a calculated tempo
+    # @return [Fixnum]
     def tempo
-      @tempo_calculator.find_tempo
+      @tempo_calculator.calculate
     end
     
     def start(*a)  

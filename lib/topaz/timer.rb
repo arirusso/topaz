@@ -102,6 +102,8 @@ module Topaz
     
     private
 
+    # Initialize the variables that handle the running process of the timer
+    # @return [Boolean]
     def initialize_running_state
       @running = true
       @phase = 0.0
