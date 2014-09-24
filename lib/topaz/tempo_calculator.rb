@@ -17,13 +17,8 @@ module Topaz
     def calculate
       tempo = nil
       if @timestamps.count >= 2
-        @timestamps.slice!(-THRESHOLD.end, THRESHOLD.end)
-        deltas = []
-        @timestamps.each_with_index do |timestamp, i| 
-          if i <= @timestamps.length - 1
-            deltas << (@timestamps[i+1] - timestamp)
-          end
-        end
+        limit_timestamps
+        deltas = get_deltas
         sum = deltas.inject(&:+)
         average = sum.to_f / deltas.length
         bpm = ppq24_millis_to_bpm(average)
@@ -32,7 +27,25 @@ module Topaz
     end
     
     private
-    
+
+    # Limit the timestamp list to within the threshold
+    # @return [Array<Time>]
+    def limit_timestamps
+      @timestamps.slice!(-THRESHOLD, THRESHOLD)
+    end
+
+    # Get the delta values between the timestamps
+    # @return [Array<Fixnum>]
+    def get_deltas
+      deltas = []
+      @timestamps.each_with_index do |timestamp, i| 
+        if i <= @timestamps.length - 1
+          deltas << (@timestamps[i+1] - timestamp)
+        end
+      end
+      deltas
+    end
+
     # Convert the raw tick intervals to beats-per-minute (BPM)
     # @param [Float] ppq24 
     # @return [Float]
