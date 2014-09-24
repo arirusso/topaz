@@ -20,7 +20,7 @@ module Topaz
         limit_timestamps
         deltas = get_deltas
         sum = deltas.inject(&:+)
-        average = sum.to_f / deltas.length
+        average = sum.to_f / deltas.count
         bpm = ppq24_millis_to_bpm(average)
         @tempo = bpm
       end
@@ -29,33 +29,26 @@ module Topaz
     private
 
     # Limit the timestamp list to within the threshold
-    # @return [Array<Time>]
+    # @return [Array<Time>, nil]
     def limit_timestamps
       if @timestamps.count > THRESHOLD
         @timestamps.slice!(THRESHOLD - @timestamps.count, THRESHOLD)
+        @timstamps
       end
     end
 
     # Get the delta values between the timestamps
     # @return [Array<Fixnum>]
     def get_deltas
-      deltas = []
-      @timestamps.each_with_index do |timestamp, i| 
-        if timestamp != @timestamps.last
-          next_timestamp = @timestamps[i+1]
-          deltas << (next_timestamp - timestamp)
-        end
-      end
-      deltas
+      @timestamps.each_cons(2).map { |a,b| b - a }
     end
 
     # Convert the raw tick intervals to beats-per-minute (BPM)
     # @param [Float] ppq24 
     # @return [Float]
     def ppq24_millis_to_bpm(ppq24)
-      quarter_note = ppq24 * 24.to_f
-      minute = 60 * 1000 # one minute in millis
-      minute / quarter_note
+      quarter_note = ppq24.to_f * 24.to_f
+      60 / quarter_note
     end
     
   end
