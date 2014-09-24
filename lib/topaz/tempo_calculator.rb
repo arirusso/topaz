@@ -31,7 +31,9 @@ module Topaz
     # Limit the timestamp list to within the threshold
     # @return [Array<Time>]
     def limit_timestamps
-      @timestamps.slice!(-THRESHOLD, THRESHOLD)
+      if @timestamps.count > THRESHOLD
+        @timestamps.slice!(THRESHOLD - @timestamps.count, THRESHOLD)
+      end
     end
 
     # Get the delta values between the timestamps
@@ -39,8 +41,9 @@ module Topaz
     def get_deltas
       deltas = []
       @timestamps.each_with_index do |timestamp, i| 
-        if i <= @timestamps.length - 1
-          deltas << (@timestamps[i+1] - timestamp)
+        if timestamp != @timestamps.last
+          next_timestamp = @timestamps[i+1]
+          deltas << (next_timestamp - timestamp)
         end
       end
       deltas
