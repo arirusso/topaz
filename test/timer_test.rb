@@ -8,6 +8,26 @@ class Topaz::TimerTest < Test::Unit::TestCase
       @timer = Topaz::Timer.new(120)
     end
 
+    context "#dispatch" do
+
+      setup do
+        @event = Object.new
+        @timer = Topaz::Timer.new(120, :event => @event)
+        @timer.send(:initialize_running_state)
+      end
+
+      should "fire MIDI clock event" do
+        @event.expects(:do_clock).once.returns(true)
+        @timer.send(:dispatch)
+      end
+
+      should "fire tick event" do
+        @event.expects(:do_tick).once.returns(true)
+        @timer.send(:dispatch)
+      end
+
+    end
+
     context "#start" do
 
       should "start running" do
