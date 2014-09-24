@@ -1,9 +1,9 @@
 module Topaz
 
-  class InternalTempo < Gamelan::Timer
-            
-    def initialize(events, tempo, options = {})
-      @events = events
+  class Timer < Gamelan::Timer
+
+    def initialize(event, tempo, options = {})
+      @event = event
       @last = 0
       @last_sync = 0
       self.interval = options[:interval] || 4 
@@ -49,7 +49,10 @@ module Topaz
         begin
           @phase  = 0.0
           @origin = @time = Time.now.to_f
-          loop { dispatch; advance }
+          loop do 
+            dispatch 
+            advance
+          end
         rescue Exception => exception
           Thread.main.raise(exception)
         end
@@ -62,13 +65,12 @@ module Topaz
       # stuff to do on every tick      
       if time_for_midi_clock?
         # look for stop
-        (stop and return) if @events.stop?
-        @events.do_midi_clock        
+        @event.do_clock        
         @last_sync = (@phase * 24).to_i
       end
       # stuff to do on @interval
       if time_for_tick?
-        @events.do_tick
+        @event.do_tick
         @last = (@phase * @interval).to_i
       end      
     end

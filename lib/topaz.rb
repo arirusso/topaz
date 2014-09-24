@@ -9,13 +9,15 @@ require "gamelan"
 require "midi-eye"
 require "midi-message"
 
+# modules
+require "topaz/tempo_source"
+
 # classes
-require "topaz/events"
-require "topaz/external_midi_tempo"
-require "topaz/internal_tempo"
-require "topaz/midi_sync_output"
+require "topaz/midi_clock_input"
+require "topaz/midi_clock_output"
 require "topaz/tempo_calculator"
 require "topaz/tempo"
+require "topaz/timer"
 
 module Topaz
   
