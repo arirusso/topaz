@@ -13,7 +13,7 @@ module Topaz
     end
     
     # Analyze the tempo based on the threshold
-    # @return [Fixnum]
+    # @return [Float, nil] The tempo as a float, or nil if there's not enough data to calculate it
     def calculate
       tempo = nil
       if @timestamps.count >= 2
@@ -38,7 +38,7 @@ module Topaz
     end
 
     # Get the delta values between the timestamps
-    # @return [Array<Fixnum>]
+    # @return [Array<Float>]
     def get_deltas
       @timestamps.each_cons(2).map { |a,b| b - a }
     end
