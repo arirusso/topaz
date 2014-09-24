@@ -13,10 +13,10 @@ require "midi-message"
 require "topaz/tempo_source"
 
 # classes
+require "topaz/clock"
 require "topaz/midi_clock_input"
 require "topaz/midi_clock_output"
 require "topaz/tempo_calculator"
-require "topaz/tempo"
 require "topaz/timer"
 
 module Topaz
