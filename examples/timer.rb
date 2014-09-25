@@ -3,7 +3,7 @@ $:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
 require "topaz"
 
-# A mock sequencer for demonstration
+# A mock sequencer
 class Sequencer
   
   def step
@@ -15,6 +15,10 @@ end
 
 seq = Sequencer.new
 
-# This sets 8th note = 132 bpm.  The default value is quarter note (or 4)
-@tempo = Topaz::Tempo.new(132, :interval => 8) { seq.step }
+# This sets quarter note = 132 bpm
+@tempo = Topaz::Tempo.new(132) { seq.step }
+
+puts "Control-C to exit"
+puts
+
 @tempo.start

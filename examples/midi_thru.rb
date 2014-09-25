@@ -5,7 +5,7 @@ require "topaz"
 
 # Sync to a MIDI input, and send MIDI clock to an output
 
-# First, select MIDI input and output
+# Select MIDI input and output
 @input = UniMIDI::Input.gets
 @output = UniMIDI::Output.gets
 
@@ -20,5 +20,10 @@ class Sequencer
 end
 
 sequencer = Sequencer.new
-@tempo = Topaz::Tempo.new(@input, :midi => [@output]) { sequencer.step }
+@tempo = Topaz::Clock.new(@input, :midi => [@output]) { sequencer.step }
+
+puts "Waiting for MIDI clock..."
+puts "Control-C to exit"
+puts
+
 @tempo.start

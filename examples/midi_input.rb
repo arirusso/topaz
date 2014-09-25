@@ -3,7 +3,9 @@ $:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
 require "topaz"
 
-# A mock sequencer for demonstration
+# Receive MIDI clock messages
+
+# A mock sequencer
 class Sequencer
   
   def step
@@ -13,15 +15,18 @@ class Sequencer
   
 end
 
-# First, have the user select a MIDI port
+# Select a MIDI input
 @input = UniMIDI::Input.gets
 
 sequencer = Sequencer.new
 
-@tempo = Topaz::Tempo.new(@input) do 
+@tempo = Topaz::Clock.new(@input) do 
   sequencer.step 
   puts "tempo: #{@tempo.tempo}"
 end
 
 puts "Waiting for MIDI clock..."
+puts "Control-C to exit"
+puts
+
 @tempo.start
