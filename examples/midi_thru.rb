@@ -3,9 +3,9 @@ $:.unshift File.join( File.dirname( __FILE__ ), "../lib")
 
 require "topaz"
 
-# This example will sync to a MIDI input, as well as send the sync messages to another output
+# Sync to a MIDI input, and send MIDI clock to an output
 
-# First, have the user select MIDI input and output
+# First, select MIDI input and output
 @input = UniMIDI::Input.gets
 @output = UniMIDI::Output.gets
 
