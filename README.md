@@ -33,13 +33,13 @@ end
 sequencer = Sequencer.new
 ```
 
-The simplest application of Topaz is to create a clock to step that sequencer at a given rate.  Using timing generated internally by your computer, the passed in block will be called repeatedly at 130 BPM
+The Topaz clock can now be used to step that sequencer.  Timed by Topaz, the passed in block will be called repeatedly at 130 BPM
 
 ```ruby
 @clock = Topaz::Clock.new(130) { sequencer.step }
 ```
 
-You may also use another MIDI device to generate timing and control the tempo.  The unimidi input to which that device is connected can be passed to the Tempo constructor    
+A MIDI device can be used to time and control the tempo.  To accomplish this, pass a [unimidi](https://github.com/arirusso/unimidi) input to the Clock constructor   
 
 ```ruby
 @input = UniMIDI::Input.gets # select a midi input 
@@ -47,7 +47,7 @@ You may also use another MIDI device to generate timing and control the tempo.  
 @clock = Topaz::Clock.new(@input) { sequencer.step }
 ```
         
-Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI start, stop and clock signals will automatically be sent to that output at the appropriate time
+Topaz can also act as a MIDI master clock. If a MIDI output is passed to Topaz, MIDI clock messages will automatically be sent to that output at the appropriate time
 
 ```ruby
 @output = UniMIDI::Output.gets # select a midi output 
@@ -57,7 +57,7 @@ Topaz can also act as a master clock. If a MIDI output is passed to Topaz, MIDI 
 end
 ```
 
-Input and multiple outputs can be used simultaneously
+Input and multiple outputs can be used simultaneously, for MIDI thru
 
 ```ruby
 @clock = Topaz::Clock.new(@input, :midi => [@output1, @output2]) do 
@@ -65,35 +65,25 @@ Input and multiple outputs can be used simultaneously
 end
 ```
 
-Once the Tempo object is initialized, start the clock
+Once the Clock object is initialized, start the clock
 
 ```ruby
 @clock.start
 ```
 
-If you are syncing to external clock, nothing will happen until a "start" or "clock" message is received
-  
-#### Other things to note
-
-Whether or not you are using an internal or external clock source, the event block will be called at quarter note intervals by default.  If you wish to change this set the option :interval.  In this case, the event will be fired 4 times per beat (16th notes) at 138 BPM   
+Topaz will run in a background thread if the option `:background => true` is passed in.
 
 ```ruby
-@clock = Topaz::Clock.new(138, :interval => 16) do
-  sequencer.step
-end
+@clock.start(:background => true)
 ```
+
+If you are syncing to an external MIDI source, this will start the listener waiting for MIDI clock messages.
   
-View the current tempo, which is calculated by Topaz if you're using an external MIDI source.
+You can view the current tempo:
 
 ```ruby
 @clock.tempo
   => 132.422000
-```
-
-Run the generator in a background thread by passing :background => true to Tempo#start
-
-```ruby
-@clock.start(:background => true)
 ```
   
 Pass in a block that will stop the clock when it evaluates to true
