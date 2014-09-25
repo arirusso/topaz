@@ -25,10 +25,10 @@ class Topaz::TempoCalculatorTest < Test::Unit::TestCase
       end
 
       should "express tempo" do
-        5.times { |i| @calc.timestamps << Time.now.to_f; sleep(1.0 / 24) }
+        5.times { |i| @calc.timestamps << Time.now.to_f; sleep(1.0 / 24.0) }
         result = @calc.calculate
         assert_not_nil result
-        assert (59..61).include?(result)
+        assert (58..62).include?(result)
       end
 
     end
