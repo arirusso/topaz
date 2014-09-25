@@ -5,7 +5,7 @@ module Topaz
 
     include API
 
-    attr_reader :event, :midi_clock_output, :source, :trigger
+    attr_reader :event, :midi_output, :source, :trigger
 
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
@@ -13,7 +13,7 @@ module Topaz
     def initialize(tempo_or_input, options = {}, &tick_event)
       # The MIDI clock output is initialized regardless of whether there are devices
       # so that it is ready if any are added during the running process.
-      @midi_clock_output = MIDIClockOutput.new(:devices => options[:midi])
+      @midi_output = MIDIClockOutput.new(:devices => options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
       @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event })) 
@@ -79,12 +79,12 @@ module Topaz
         if @trigger.stop?
           stop
         else
-          @midi_clock_output.do_clock
+          @midi_output.do_clock
         end
       end
       @event.clock = clock
-      @event.start << proc { @midi_clock_output.do_start }
-      @event.stop << proc { @midi_clock_output.do_stop }
+      @event.start << proc { @midi_output.do_start }
+      @event.stop << proc { @midi_output.do_stop }
       @event
     end
 
