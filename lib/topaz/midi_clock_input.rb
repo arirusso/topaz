@@ -99,7 +99,10 @@ module Topaz
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
       # Note that this doesn't wait for a start signal
+
       @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }     
+      @listener.listen_for(:name => "Start") { start } 
+      @listener.listen_for(:name => "Stop") { stop }
       @listener
     end
 
@@ -121,7 +124,8 @@ module Topaz
     # @param [Hash] message
     # @return [Array<Fixnum>]
     def log(message)
-      @tempo_calculator.timestamps << message[:timestamp]
+      time = message[:timestamp] / 1000.0
+      @tempo_calculator.timestamps << time
     end
 
     # Fire the clock event
