@@ -5,7 +5,8 @@ module Topaz
       
     include Pausable
 
-    attr_reader :clock, :running
+    attr_reader :clock, :listening, :running
+    alias_method :listening?, :listening
     alias_method :running?, :running
   
     # @param [UniMIDI::Input] input
@@ -15,6 +16,7 @@ module Topaz
       @event = options[:event]
       @tick_counter = 0
       @pause = false
+      @listening = false
       @running = false
       @tempo_calculator = TempoCalculator.new
       @tick_threshold = interval_to_ticks(options.fetch(:interval, 4))
@@ -31,7 +33,7 @@ module Topaz
     # Start the listener
     # @return [MIDIInputClock] self
     def start(*a)  
-      @running = true
+      @listening = true
       @listener.start(*a)
       self
     end
@@ -39,7 +41,7 @@ module Topaz
     # Stop the listener
     # @return [MIDIInputClock] self
     def stop(*a)
-      @running = false
+      @listening = false
       @listener.stop
       self
     end
@@ -98,18 +100,37 @@ module Topaz
     # @return [MIDIEye::Listener]
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
-      # Note that this doesn't wait for a start signal
-
       @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }     
-      @listener.listen_for(:name => "Start") { start } 
-      @listener.listen_for(:name => "Stop") { stop }
+      @listener.listen_for(:name => "Start") { handle_start_message } 
+      @listener.listen_for(:name => "Stop") { handle_stop_message }
       @listener
+    end
+
+    # Handle a received start message
+    # @return [Boolean]
+    def handle_start_message
+      @running = true
+      if !@event.nil?
+        @event.do_start
+        true
+      end
+    end
+
+    # Handle a received stop message
+    # @return [Boolean]
+    def handle_stop_message
+      @running = false
+      if !@event.nil?
+        @event.do_stop
+        true
+      end
     end
 
     # Handle a received clock message
     # @param [Hash] message
     # @return [Fixnum] The current counter
     def handle_clock_message(message)
+      @running ||= true
       thru
       log(message)
       tick? ? tick : advance

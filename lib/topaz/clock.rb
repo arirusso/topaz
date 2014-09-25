@@ -45,8 +45,6 @@ module Topaz
     def start(options = {})
       @start_time = Time.now
       begin
-        @midi_clock_output.do_start
-        @event.do_start
         @source.start(options)
       rescue SystemExit, Interrupt => exception
         stop
@@ -59,8 +57,6 @@ module Topaz
     # @return [Boolean]
     def stop(options = {})
       @source.stop(options)
-      @midi_clock_output.do_stop
-      @event.do_stop
       @start_time = nil
       true
     end
@@ -87,6 +83,8 @@ module Topaz
         end
       end
       @event.clock = clock
+      @event.start << proc { @midi_clock_output.do_start }
+      @event.stop << proc { @midi_clock_output.do_stop }
       @event
     end
 

@@ -27,6 +27,7 @@ module Topaz
     # @return [Timer]
     def start(options = {})
       run
+      !@event.nil? && @event.do_start
       join unless !!options[:background]
       self
     end
@@ -48,6 +49,7 @@ module Topaz
     # @return [Timer]
     def stop(*a)
       super()
+      !@event.nil? && @event.do_stop
       self
     end
     
