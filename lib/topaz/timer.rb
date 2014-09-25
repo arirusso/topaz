@@ -69,10 +69,7 @@ module Topaz
         @thread = Thread.new do
           begin
             initialize_running_state
-            loop do 
-              dispatch 
-              advance
-            end
+            loop { perform } 
           rescue Exception => exception
             Thread.main.raise(exception)
           end
@@ -88,21 +85,37 @@ module Topaz
     # @return [Boolean]
     def dispatch
       # Stuff to do on every tick      
-      if time_for_midi_clock?
-        # look for stop
-        !@event.nil? && @event.do_clock        
-        @last_midi_clock = (@phase * 24).to_i
-        true
-      end
+      clock if clock?
       # Stuff to do on @interval
-      if time_for_tick?
-        !@event.nil? && !@pause && @event.do_tick
-        @last_tick_event = (@phase * @interval).to_i
-        true
-      end
+      tick if tick?
+      true
     end
     
     private
+
+    # Perform the timer function
+    # @return [Boolean]
+    def perform
+      dispatch 
+      advance
+      true
+    end
+
+    # Perform a tick
+    # @return [Boolean]
+    def tick
+      !@event.nil? && !@pause && @event.do_tick
+      @last_tick_event = (@phase * @interval).to_i
+      true
+    end
+
+    # Perform MIDI clock
+    # @return [Boolean]
+    def clock
+      !@event.nil? && @event.do_clock
+      @last_midi_clock = (@phase * 24).to_i
+      true
+    end
 
     # Initialize the variables that handle the running process of the timer
     # @return [Boolean]
@@ -115,14 +128,14 @@ module Topaz
     
     # Is the current phase appropriate for MIDI clock output?
     # @return [Boolean]
-    def time_for_midi_clock?
+    def clock?
       phase = (@phase * 24).to_i
       !@last_midi_clock.eql?(phase)
     end
     
     # Is the current phase appropriate for the tick event?
     # @return [Boolean]
-    def time_for_tick?
+    def tick?
       phase = (@phase * @interval).to_i
       !@last_tick_event.eql?(phase)
     end
