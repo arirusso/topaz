@@ -27,28 +27,32 @@ module Topaz
       @tempo_calculator.calculate
     end
     
+    # Start the listener
+    # @return [MIDIInputClock] self
     def start(*a)  
       @running = true
       @listener.start(*a)
       self
     end
     
+    # Stop the listener
+    # @return [MIDIInputClock] self
     def stop(*a)
       @running = false
       @listener.stop
       self
     end
     
+    # Join the listener thread
+    # @return [MIDIInputClock] self
     def join
       @listener.join
       self
     end
         
-    #
-    # change the clock interval
-    # defaults to click once every 24 ticks or one quarter note which is the MIDI standard.
-    # however, if you wish to fire the on_tick event twice as often 
-    # (or once per 12 clicks), pass 8 
+    # Change the clock interval
+    # Defaults to click once every 24 ticks or one quarter note which is the MIDI standard.
+    # However, if you wish to fire the on_tick event twice as often, pass 8 
     #
     #   1 = whole note
     #   2 = half note
@@ -58,33 +62,58 @@ module Topaz
     #  16 = sixteenth note
     #  etc
     #
-    def interval=(val)
-      per_qn = val / 4
+    # @param [Fixnum] value
+    # @return [Fixnum]
+    def interval=(value)
+      per_qn = value / 4
       @per_tick = 24 / per_qn
     end
     
     # Return the interval at which the tick event is fired
     # @return [Fixnum]
     def interval
-      4 * (24 / @per_tick)
+      note_value = 24 / @per_tick
+      4 * note_value
     end
     
     private
     
+    # Initialize the MIDI input listener
+    # @param [UniMIDI::Input] input
+    # @return [MIDIEye::Listener]
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
       @counter = 0
       # Note that this doesn't wait for a start signal
-      @listener.listen_for(:name => "Clock") do |message|        
-        !@event.nil? && @event.do_clock # thru
-        @tempo_calculator.timestamps << message[:timestamp]
-        if @counter.eql?(@per_tick)
-          !@event.nil? && !@pause && @event.do_tick
-          @counter = 0 
-        else
-          @counter += 1
-        end
+      @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }     
+      @listener
+    end
+
+    def handle_clock_message(message)
+      thru
+      log(message)
+      if tick?
+        tick
+        @counter = 0 
+      else
+        @counter += 1
       end
+    end
+
+    def log(message)
+      @tempo_calculator.timestamps << message[:timestamp]
+    end
+
+    def thru
+      !@event.nil? && @event.do_clock
+    end
+
+    def tick
+      !@event.nil? && !@pause && @event.do_tick
+    end
+
+    def tick?
+      @counter.eql?(@per_tick)
     end
     
   end
