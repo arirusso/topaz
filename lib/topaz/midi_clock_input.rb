@@ -31,10 +31,15 @@ module Topaz
     end
     
     # Start the listener
+    # @param [Hash] options
+    # @option options [Boolean] :background Whether to run the listener in a background process
+    # @option options [Boolean] :focus (or :blocking) Whether to run the listener in a foreground process
     # @return [MIDIInputClock] self
-    def start(*a)  
+    def start(options = {})  
       @listening = true
-      @listener.start(*a)
+      blocking = options[:focus] || options[:blocking]
+      background = options[:background] || blocking.nil? || blocking.eql?(false)
+      @listener.start(:background => background)
       self
     end
     
