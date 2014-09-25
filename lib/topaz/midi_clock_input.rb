@@ -13,10 +13,11 @@ module Topaz
     # @option options [Clock::Event] :event
     def initialize(input, options = {})
       @event = options[:event]
+      @counter = 0
       @pause = false
       @running = false
       @tempo_calculator = TempoCalculator.new
-      self.interval = options.fetch(:interval, 4)
+      @per_tick = interval_to_tick(options.fetch(:interval, 4))
 
       initialize_listener(input)
     end
@@ -62,28 +63,35 @@ module Topaz
     #  16 = sixteenth note
     #  etc
     #
-    # @param [Fixnum] value
+    # @param [Fixnum] interval
     # @return [Fixnum]
-    def interval=(value)
-      per_qn = value / 4
-      @per_tick = 24 / per_qn
+    def interval=(interval)
+      @per_tick = interval_to_tick(interval)
     end
     
     # Return the interval at which the tick event is fired
     # @return [Fixnum]
     def interval
-      note_value = 24 / @per_tick
-      4 * note_value
+      tick_to_interval(@per_tick)
     end
     
     private
+
+    def interval_to_tick(interval)
+      per_qn = interval / 4
+      24 / per_qn
+    end
+
+    def tick_to_interval(tick)
+      note_value = 24 / tick
+      4 * note_value
+    end
     
     # Initialize the MIDI input listener
     # @param [UniMIDI::Input] input
     # @return [MIDIEye::Listener]
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
-      @counter = 0
       # Note that this doesn't wait for a start signal
       @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }     
       @listener
