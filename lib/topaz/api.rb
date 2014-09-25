@@ -1,6 +1,6 @@
 module Topaz
 
-  # Shortcuts to give the clock a more convenient API
+  # Convenience shortcuts for the clock
   module API
 
     def self.included(base)
