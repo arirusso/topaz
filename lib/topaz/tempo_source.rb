@@ -1,6 +1,6 @@
 module Topaz
 
-  # Construct a tempo source
+  # Construct a tempo source object
   module TempoSource
 
     extend self
