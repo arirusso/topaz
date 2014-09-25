@@ -3,60 +3,45 @@ module Topaz
   # Send clock messages via MIDI
   class MIDIClockOutput
 
-    # @param [Array<UniMIDI::Output>, UniMIDI::Output] output
-    def initialize(output)
-      @outputs = []
-      add_output(output)
-    end
+    attr_reader :devices
 
-    # Add a destination
-    # @param [Array<UniMIDI::Output>, UniMIDI::Output] output
-    # @return [Array<UniMIDI::Output>]
-    def add_output(output)
-      outputs = [output].flatten.compact
-      @outputs += outputs
-      @outputs
+    # @param [Hash] options
+    # @option options [Array<UniMIDI::Output>, UniMIDI::Output] :device
+    def initialize(options)
+      device = options[:device] || options[:devices]
+      @devices = [device].flatten.compact
     end
-    alias_method :add_outputs, :add_output
-
-    # Remove a destination
-    # @param [Array<UniMIDI::Output>, UniMIDI::Output] destinations
-    # @return [Array<UniMIDI::Output>]
-    def remove_output(output)
-      outputs = [output].flatten.compact
-      @outputs.delete_if { |output| outputs.include?(output) }
-      @outputs
-    end
-    alias_method :remove_outputs, :remove_output
     
     # Send a start message
     # @return [Boolean] Whether a message was emitted
     def do_start(*a)
-      start = MIDIMessage::SystemRealtime["Start"].new.to_a
+      start = MIDIMessage::SystemRealtime["Start"].new
       emit(start)
-      !@outputs.empty?
+      !@devices.empty?
     end
 
     # Send a stop message
     # @return [Boolean] Whether a message was emitted
     def do_stop(*a)
-      stop = MIDIMessage::SystemRealtime["Stop"].new.to_a
+      stop = MIDIMessage::SystemRealtime["Stop"].new
       emit(stop)
-      !@outputs.empty?
+      !@devices.empty?
     end
         
     # Send a clock tick message
     # @return [Boolean] Whether a message was emitted
     def do_clock(*a)
-      clock = MIDIMessage::SystemRealtime["Clock"].new.to_a
+      clock = MIDIMessage::SystemRealtime["Clock"].new
       emit(clock)
-      !@outputs.empty?
+      !@devices.empty?
     end
 
     private
 
+    # Emit a message to the devices
+    # @param [MIDIMessage] message
     def emit(message)
-      @outputs.each { |output| output.puts(message) }
+      @devices.each { |device| device.puts(*message.to_bytes) }
     end
     
   end

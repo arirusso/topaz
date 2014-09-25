@@ -11,7 +11,9 @@ module Topaz
     # @param [Hash] options
     # @param [Proc] tick_event
     def initialize(tempo_or_input, options = {}, &tick_event)
-      @midi_clock_output = MIDIClockOutput.new(options[:midi])
+      # The MIDI clock output is initialized regardless of whether there are devices
+      # so that it is ready if any are added during the running process.
+      @midi_clock_output = MIDIClockOutput.new(:devices => options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
       @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event })) 
