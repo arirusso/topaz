@@ -66,24 +66,30 @@ module Topaz
     # @param [Fixnum] interval
     # @return [Fixnum]
     def interval=(interval)
-      @per_tick = interval_to_tick(interval)
+      @per_tick = interval_to_ticks(interval)
     end
     
     # Return the interval at which the tick event is fired
     # @return [Fixnum]
     def interval
-      tick_to_interval(@per_tick)
+      ticks_to_interval(@per_tick)
     end
     
     private
 
+    # Convert a note interval to number of ticks
+    # @param [Fixnum] interval
+    # @param [Fixnum]
     def interval_to_tick(interval)
       per_qn = interval / 4
       24 / per_qn
     end
 
-    def tick_to_interval(tick)
-      note_value = 24 / tick
+    # Convert a number of ticks to a note interval
+    # @param [Fixnum] ticks
+    # @param [Fixnum]
+    def tick_to_interval(ticks)
+      note_value = 24 / ticks
       4 * note_value
     end
     
@@ -97,29 +103,42 @@ module Topaz
       @listener
     end
 
+    # Handle a received clock message
+    # @param [Hash] message
+    # @return [Fixnum] The current counter
     def handle_clock_message(message)
       thru
       log(message)
       if tick?
         tick
-        @counter = 0 
+        @counter = 0
       else
         @counter += 1
       end
     end
 
+    # Log the timestamp of a message for tempo calculation
+    # @param [Hash] message
+    # @return [Array<Fixnum>]
     def log(message)
       @tempo_calculator.timestamps << message[:timestamp]
     end
 
+    # Fire the clock event
+    # (this results in MIDI output sending clock, thus thru)
+    # @return [Boolean]
     def thru
-      !@event.nil? && @event.do_clock
+      !@event.nil? && !!@event.do_clock
     end
 
+    # Fire the tick event
+    # @return [Boolean]
     def tick
-      !@event.nil? && !@pause && @event.do_tick
+      !@event.nil? && !@pause && !!@event.do_tick
     end
 
+    # Should the tick event be fired given the current state?
+    # @return [Boolean]
     def tick?
       @counter.eql?(@per_tick)
     end
