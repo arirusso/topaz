@@ -1,6 +1,6 @@
 require "helper"
 
-class Topaz::ClockTest < Test::Unit::TestCase
+class Topaz::ClockTest < Minitest::Test
 
   context "Clock" do
 
@@ -60,4 +60,3 @@ class Topaz::ClockTest < Test::Unit::TestCase
 
   end
 end
-

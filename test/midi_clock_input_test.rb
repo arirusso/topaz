@@ -1,6 +1,6 @@
 require "helper"
 
-class Topaz::MIDIClockInputTest < Test::Unit::TestCase
+class Topaz::MIDIClockInputTest < Minitest::Test
 
   context "MIDIClockInput" do
 
@@ -32,7 +32,7 @@ class Topaz::MIDIClockInputTest < Test::Unit::TestCase
 
       should "tick when counter has reached tick threshold" do
         assert_equal 4, @clock.interval
-        23.times do 
+        23.times do
           refute @clock.send(:tick?)
           @clock.send(:advance)
         end
@@ -45,7 +45,3 @@ class Topaz::MIDIClockInputTest < Test::Unit::TestCase
   end
 
 end
-
-
-
-

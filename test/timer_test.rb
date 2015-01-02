@@ -1,6 +1,6 @@
 require "helper"
 
-class Topaz::TimerTest < Test::Unit::TestCase
+class Topaz::TimerTest < Minitest::Test
 
   context "Timer" do
 
@@ -14,15 +14,16 @@ class Topaz::TimerTest < Test::Unit::TestCase
         @event = Object.new
         @timer = Topaz::Timer.new(120, :event => @event)
         @timer.send(:initialize_running_state)
-      end
-
-      should "fire MIDI clock event" do
         @event.expects(:do_clock).once.returns(true)
-        @timer.send(:dispatch)
+        @event.expects(:do_tick).once.returns(true)
       end
 
-      should "fire tick event" do
-        @event.expects(:do_tick).once.returns(true)
+      teardown do
+        @event.unstub(:do_clock)
+        @event.unstub(:do_tick)
+      end
+
+      should "fire MIDI clock/tick events" do
         @timer.send(:dispatch)
       end
 
@@ -36,8 +37,8 @@ class Topaz::TimerTest < Test::Unit::TestCase
         loop until @timer.running?
 
         assert @timer.running?
-        assert_not_nil @timer.phase
-        assert_not_equal 0.0, @timer.phase
+        refute_nil @timer.phase
+        refute_equal 0.0, @timer.phase
       end
 
     end
@@ -53,14 +54,14 @@ class Topaz::TimerTest < Test::Unit::TestCase
       end
 
       should "stop running" do
-        assert_not_nil @timer.phase
-        assert_not_equal 0.0, @timer.phase
+        refute_nil @timer.phase
+        refute_equal 0.0, @timer.phase
         @timer.stop
         refute @timer.running?
       end
 
     end
-    
+
     context "#interval=" do
 
       should "change interval" do

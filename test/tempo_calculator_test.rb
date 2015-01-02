@@ -1,6 +1,6 @@
 require "helper"
 
-class Topaz::TempoCalculatorTest < Test::Unit::TestCase
+class Topaz::TempoCalculatorTest < Minitest::Test
 
   context "TempoCalculator" do
 
@@ -15,7 +15,7 @@ class Topaz::TempoCalculatorTest < Test::Unit::TestCase
         assert_nil @calc.calculate
         @calc.timestamps << 2
         @calc.timestamps << 3
-        assert_not_nil @calc.calculate
+        refute_nil @calc.calculate
       end
 
       should "limit timestamps do within the threshold" do
@@ -27,7 +27,7 @@ class Topaz::TempoCalculatorTest < Test::Unit::TestCase
       should "express tempo" do
         5.times { |i| @calc.timestamps << Time.now.to_f; sleep(1.0 / 24.0) }
         result = @calc.calculate
-        assert_not_nil result
+        refute_nil result
         assert (58..62).include?(result)
       end
 
@@ -36,4 +36,3 @@ class Topaz::TempoCalculatorTest < Test::Unit::TestCase
   end
 
 end
-

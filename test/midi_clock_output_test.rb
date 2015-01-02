@@ -1,6 +1,6 @@
 require "helper"
 
-class Topaz::MIDIClockOutputTest < Test::Unit::TestCase
+class Topaz::MIDIClockOutputTest < Minitest::Test
 
   context "MIDIClockOutput" do
 
@@ -10,34 +10,52 @@ class Topaz::MIDIClockOutputTest < Test::Unit::TestCase
     end
 
     context "#do_start" do
-      
-      should "emit start message" do
+
+      setup do
         @output.expects(:puts).once.with(250)
+      end
+
+      teardown do
+        @output.unstub(:puts)
+      end
+
+      should "emit start message" do
         result = @clock.do_start
         assert result
-        @output.unstub(:puts)
       end
 
     end
 
     context "#do_stop" do
 
-      should "emit stop message" do
+      setup do
         @output.expects(:puts).once.with(252)
+      end
+
+      teardown do
+        @output.unstub(:puts)
+      end
+
+      should "emit stop message" do
         result = @clock.do_stop
         assert result
-        @output.unstub(:puts)
       end
 
     end
 
     context "#do_clock" do
 
-      should "emit clock message" do
+      setup do
         @output.expects(:puts).once.with(248)
+      end
+
+      teardown do
+        @output.unstub(:puts)
+      end
+
+      should "emit clock message" do
         result = @clock.do_clock
         assert result
-        @output.unstub(:puts)
       end
 
     end
@@ -45,6 +63,3 @@ class Topaz::MIDIClockOutputTest < Test::Unit::TestCase
   end
 
 end
-
-
-
