@@ -16,7 +16,7 @@ module Topaz
       @midi_output = MIDIClockOutput.new(:devices => options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
-      @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event })) 
+      @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event }))
       initialize_events(&tick_event)
     end
 
@@ -48,6 +48,7 @@ module Topaz
         @source.start(options)
       rescue SystemExit, Interrupt => exception
         stop
+        raise exception
       end
       true
     end
@@ -75,7 +76,7 @@ module Topaz
     # @return [Clock::Event]
     def initialize_events(&block)
       @event.tick << block if block_given?
-      clock = proc do 
+      clock = proc do
         if @trigger.stop?
           stop
         else
