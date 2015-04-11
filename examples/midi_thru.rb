@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
+$:.unshift(File.join("..", "lib"))
 
 require "topaz"
 
@@ -11,12 +11,12 @@ require "topaz"
 
 # Mock sequencer
 class Sequencer
-  
+
   def step
     @i ||= 0
     p "step #{@i+=1}"
   end
-  
+
 end
 
 sequencer = Sequencer.new

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), "../lib")
+$:.unshift(File.join("..", "lib"))
 
 require "topaz"
 
@@ -7,12 +7,12 @@ require "topaz"
 
 # A mock sequencer
 class Sequencer
-  
+
   def step
     @i ||= 0
     p "step #{@i+=1}"
   end
-  
+
 end
 
 # Select a MIDI input
@@ -20,8 +20,8 @@ end
 
 sequencer = Sequencer.new
 
-@tempo = Topaz::Clock.new(@input) do 
-  sequencer.step 
+@tempo = Topaz::Clock.new(@input) do
+  sequencer.step
   puts "tempo: #{@tempo.tempo}"
 end
 
