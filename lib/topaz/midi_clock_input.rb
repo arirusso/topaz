@@ -1,14 +1,14 @@
 module Topaz
-  
+
   # Trigger an event based on received midi clock messages
   class MIDIClockInput
-      
+
     include Pausable
 
     attr_reader :clock, :listening, :running
     alias_method :listening?, :listening
     alias_method :running?, :running
-  
+
     # @param [UniMIDI::Input] input
     # @param [Hash] options
     # @option options [Clock::Event] :event
@@ -23,26 +23,28 @@ module Topaz
 
       initialize_listener(input)
     end
-    
+
     # This will return a calculated tempo
     # @return [Fixnum]
     def tempo
       @tempo_calculator.calculate
     end
-    
+
     # Start the listener
     # @param [Hash] options
     # @option options [Boolean] :background Whether to run the listener in a background process
     # @option options [Boolean] :focus (or :blocking) Whether to run the listener in a foreground process
     # @return [MIDIInputClock] self
-    def start(options = {})  
+    def start(options = {})
       @listening = true
       blocking = options[:focus] || options[:blocking]
-      background = options[:background] || blocking.nil? || blocking.eql?(false)
+      background = !blocking unless blocking.nil?
+      background = options[:background] if background.nil?
+      background = false if background.nil?
       @listener.start(:background => background)
       self
     end
-    
+
     # Stop the listener
     # @return [MIDIInputClock] self
     def stop(*a)
@@ -50,17 +52,17 @@ module Topaz
       @listener.stop
       self
     end
-    
+
     # Join the listener thread
     # @return [MIDIInputClock] self
     def join
       @listener.join
       self
     end
-        
+
     # Change the clock interval
     # Defaults to 4, which means click once every 24 ticks or one quarter note (per MIDI spec).
-    # Therefore, to fire the on_tick event twice as often, pass 8 
+    # Therefore, to fire the on_tick event twice as often, pass 8
     #
     #   1 = whole note
     #   2 = half note
@@ -75,13 +77,13 @@ module Topaz
     def interval=(interval)
       @tick_threshold = interval_to_ticks(interval)
     end
-    
+
     # Return the interval at which the tick event is fired
     # @return [Fixnum]
     def interval
       ticks_to_interval(@tick_threshold)
     end
-    
+
     private
 
     # Convert a note interval to number of ticks
@@ -99,14 +101,14 @@ module Topaz
       note_value = 24 / ticks
       4 * note_value
     end
-    
+
     # Initialize the MIDI input listener
     # @param [UniMIDI::Input] input
     # @return [MIDIEye::Listener]
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
-      @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }     
-      @listener.listen_for(:name => "Start") { handle_start_message } 
+      @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }
+      @listener.listen_for(:name => "Start") { handle_start_message }
       @listener.listen_for(:name => "Stop") { handle_stop_message }
       @listener
     end
@@ -178,9 +180,9 @@ module Topaz
     # Should the tick event be fired given the current state?
     # @return [Boolean]
     def tick?
-      @tick_counter >= (@tick_threshold - 1)
+      @tick_counter >= @tick_threshold - 1
     end
-    
+
   end
-  
+
 end
