@@ -20,7 +20,7 @@ end
 
 sequencer = Sequencer.new
 
-@tempo = Topaz::Clock.new(@input) do
+@tempo = Topaz::Clock.new(@input, :midi_transport => true) do
   sequencer.step
   puts "tempo: #{@tempo.tempo}"
 end

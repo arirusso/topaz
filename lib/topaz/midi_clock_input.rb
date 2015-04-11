@@ -12,8 +12,10 @@ module Topaz
     # @param [UniMIDI::Input] input
     # @param [Hash] options
     # @option options [Clock::Event] :event
+    # @option options [Boolean] :midi_transport Whether to respect start/stop MIDI commands from a MIDI input
     def initialize(input, options = {})
       @event = options[:event]
+      @use_transport = !!options[:midi_transport]
       @tick_counter = 0
       @pause = false
       @listening = false
@@ -137,10 +139,12 @@ module Topaz
     # @param [Hash] message
     # @return [Fixnum] The current counter
     def handle_clock_message(message)
-      @running ||= true
-      thru
-      log(message)
-      tick? ? tick : advance
+      if @running || !@use_transport
+        @running ||= true
+        thru
+        log(message)
+        tick? ? tick : advance
+      end
     end
 
     # Advance the tick counter

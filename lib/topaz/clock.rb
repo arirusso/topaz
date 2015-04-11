@@ -9,6 +9,7 @@ module Topaz
 
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
+    # @option options [Boolean] :midi_transport Whether to respect start/stop MIDI commands from a MIDI input
     # @param [Proc] tick_event
     def initialize(tempo_or_input, options = {}, &tick_event)
       # The MIDI clock output is initialized regardless of whether there are devices

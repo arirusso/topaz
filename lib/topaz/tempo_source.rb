@@ -9,6 +9,7 @@ module Topaz
     # @param [Fixnum, UniMIDI::Input] tempo_or_input
     # @param [Hash] options
     # @option options [Clock::Event] :event
+    # @option options [Boolean] :midi_transport Whether to respect start/stop commands when the input is MIDI
     # @return [MIDIClockInput, Timer]
     def new(tempo_or_input, options = {})
       klass = case tempo_or_input
@@ -17,9 +18,7 @@ module Topaz
       else
         raise "Not a valid tempo source"
       end
-      source = klass.new(tempo_or_input, :event => options[:event])
-      source.interval = options[:interval] unless options[:interval].nil?
-      source
+      klass.new(tempo_or_input, options)
     end
 
   end
