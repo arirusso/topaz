@@ -1,7 +1,5 @@
 # Topaz
 
-![pic](http://img526.imageshack.us/img526/5781/topazt.jpg)
-
 MIDI syncable tempo in Ruby
 
 ## Installation
