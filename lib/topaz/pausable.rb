@@ -1,8 +1,8 @@
-module Topaz
+# frozen_string_literal: true
 
+module Topaz
   # Pause functionality
   module Pausable
-
     # Pause the clock
     # @return [Boolean]
     def pause
@@ -20,13 +20,12 @@ module Topaz
     def paused?
       @pause
     end
-    alias_method :pause?, :paused?
+    alias pause? paused?
 
     # Toggle pausing the clock
     # @return [Boolean]
     def toggle_pause
-      @pause = !@pause      
+      @pause = !@pause
     end
-
   end
 end

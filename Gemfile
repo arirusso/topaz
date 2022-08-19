@@ -1,13 +1,11 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-group :test do
-  gem "minitest", "~> 5.5", ">= 5.5.0"
-  gem "mocha", "~> 1.1", ">= 1.1.0"
-  gem "rake", "~> 10.4", ">= 10.4.2"
-  gem "shoulda-context", "~> 1.2", ">= 1.2.1"
-end
+source 'https://rubygems.org'
 
-gem "gamelan", "~> 0", ">= 0.3"
-gem "midi-message", "~> 0.4", ">= 0.4.4"
-gem "midi-eye", "~> 0.3", ">= 0.3.7"
-gem "unimidi", "~> 0.4", ">= 0.4.6"
+gem 'rake', '~> 13.0', '>= 13.0.6', groups: %i[development test]
+gem 'rspec', '~> 3.11', '>= 3.11.0', groups: %i[test]
+gem 'rubocop', '~> 1.12', '>= 1.12.1', groups: %i[development test], require: false
+
+gem 'midi-eye', '~> 0.3', '>= 0.3.7', require: false
+gem 'midi-message', '~> 0.4', '>= 0.4.4'
+gem 'unimidi', '~> 0.4', '>= 0.4.6', require: false
