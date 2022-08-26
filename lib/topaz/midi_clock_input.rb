@@ -1,21 +1,23 @@
-module Topaz
+# frozen_string_literal: true
 
+module Topaz
   # Trigger an event based on received midi clock messages
   class MIDIClockInput
-
     include Pausable
 
     attr_reader :clock, :listening, :running
-    alias_method :listening?, :listening
-    alias_method :running?, :running
+    alias listening? listening
+    alias running? running
 
     # @param [UniMIDI::Input] input
     # @param [Hash] options
     # @option options [Clock::Event] :event
     # @option options [Boolean] :midi_transport Whether to respect start/stop MIDI commands from a MIDI input
     def initialize(input, options = {})
+      require 'midi-eye'
+
       @event = options[:event]
-      @use_transport = !!options[:midi_transport]
+      @use_transport = !options[:midi_transport].nil?
       @tick_counter = 0
       @pause = false
       @listening = false
@@ -43,13 +45,13 @@ module Topaz
       background = !blocking unless blocking.nil?
       background = options[:background] if background.nil?
       background = false if background.nil?
-      @listener.start(:background => background)
+      @listener.start(background: background)
       self
     end
 
     # Stop the listener
     # @return [MIDIInputClock] self
-    def stop(*a)
+    def stop(*_args)
       @listening = false
       @listener.stop
       self
@@ -109,9 +111,9 @@ module Topaz
     # @return [MIDIEye::Listener]
     def initialize_listener(input)
       @listener = MIDIEye::Listener.new(input)
-      @listener.listen_for(:name => "Clock") { |message| handle_clock_message(message) }
-      @listener.listen_for(:name => "Start") { handle_start_message }
-      @listener.listen_for(:name => "Stop") { handle_stop_message }
+      @listener.listen_for(name: 'Clock') { |message| handle_clock_message(message) }
+      @listener.listen_for(name: 'Start') { handle_start_message }
+      @listener.listen_for(name: 'Stop') { handle_stop_message }
       @listener
     end
 
@@ -119,32 +121,32 @@ module Topaz
     # @return [Boolean]
     def handle_start_message
       @running = true
-      if !@event.nil?
-        @event.do_start
-        true
-      end
+      return if @event.nil?
+
+      @event.do_start
+      true
     end
 
     # Handle a received stop message
     # @return [Boolean]
     def handle_stop_message
       @running = false
-      if !@event.nil?
-        @event.do_stop
-        true
-      end
+      return if @event.nil?
+
+      @event.do_stop
+      true
     end
 
     # Handle a received clock message
     # @param [Hash] message
     # @return [Fixnum] The current counter
     def handle_clock_message(message)
-      if @running || !@use_transport
-        @running ||= true
-        thru
-        log(message)
-        tick? ? tick : advance
-      end
+      return unless @running || !@use_transport
+
+      @running ||= true
+      thru
+      log(message)
+      tick? ? tick : advance
     end
 
     # Advance the tick counter
@@ -165,20 +167,20 @@ module Topaz
     # (this results in MIDI output sending clock, thus thru)
     # @return [Boolean]
     def thru
-      if !@event.nil?
-        @event.do_clock
-        true
-      end
+      return if @event.nil?
+
+      @event.do_clock
+      true
     end
 
     # Fire the tick event
     # @return [Boolean]
     def tick
       @tick_counter = 0
-      if !@event.nil? && !@pause
-        @event.do_tick
-        true
-      end
+      return if @event.nil? || @pause
+
+      @event.do_tick
+      true
     end
 
     # Should the tick event be fired given the current state?
@@ -186,7 +188,5 @@ module Topaz
     def tick?
       @tick_counter >= @tick_threshold - 1
     end
-
   end
-
 end

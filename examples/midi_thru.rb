@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
-$:.unshift(File.join("..", "lib"))
+# frozen_string_literal: true
 
-require "topaz"
+$LOAD_PATH.unshift(File.join('..', 'lib'))
+
+require 'topaz'
+require 'unimidi'
 
 # Sync to a MIDI input, and send MIDI clock to an output
 
@@ -11,19 +14,17 @@ require "topaz"
 
 # Mock sequencer
 class Sequencer
-
   def step
     @i ||= 0
-    p "step #{@i+=1}"
+    p "step #{@i += 1}"
   end
-
 end
 
 sequencer = Sequencer.new
-@tempo = Topaz::Clock.new(@input, :midi => [@output]) { sequencer.step }
+@tempo = Topaz::Clock.new(@input, midi: [@output]) { sequencer.step }
 
-puts "Waiting for MIDI clock..."
-puts "Control-C to exit"
+puts 'Waiting for MIDI clock...'
+puts 'Control-C to exit'
 puts
 
 @tempo.start

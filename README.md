@@ -10,12 +10,12 @@ MIDI syncable tempo in Ruby
 
   or with Bundler, add this to your Gemfile
 
-`gem "midi-topaz"`
+`gem 'midi-topaz'`
 
 ## Usage
 
 ```ruby
-require "topaz"
+require 'topaz'
 ```
 
 For demonstration purposes, here's a mock sequencer class and object
@@ -42,6 +42,8 @@ The Topaz clock can now be used to step that sequencer.  Timed by Topaz, the pas
 A MIDI device can be used to time and control the tempo.  To accomplish this, pass a [unimidi](https://github.com/arirusso/unimidi) input to the Clock constructor
 
 ```ruby
+require 'unimidi'
+
 @input = UniMIDI::Input.gets # select a midi input
 
 @clock = Topaz::Clock.new(@input) { sequencer.step }
@@ -52,7 +54,7 @@ Topaz can also act as a MIDI master clock. If a MIDI output is passed to Topaz, 
 ```ruby
 @output = UniMIDI::Output.gets # select a midi output
 
-@clock = Topaz::Clock.new(120, :midi => @output) do
+@clock = Topaz::Clock.new(120, midi: @output) do
   sequencer.step
 end
 ```
@@ -60,7 +62,7 @@ end
 Input and multiple outputs can be used simultaneously, for MIDI thru
 
 ```ruby
-@clock = Topaz::Clock.new(@input, :midi => [@output1, @output2]) do
+@clock = Topaz::Clock.new(@input, midi: [@output1, @output2]) do
   sequencer.step
 end
 ```
@@ -71,10 +73,10 @@ Once the Clock object is initialized, start the clock
 @clock.start
 ```
 
-Topaz will run in a background thread if the option `:background => true` is passed in.
+Topaz will run in a background thread if the option `background: true` is passed in.
 
 ```ruby
-@clock.start(:background => true)
+@clock.start(background: true)
 ```
 
 If you are syncing to an external MIDI source, this will start the listener waiting for MIDI clock messages.
@@ -105,4 +107,4 @@ Pass in a block that will stop the clock when it evaluates to true
 
 Apache 2.0, See the file LICENSE
 
-Copyright (c) 2011-2015 [Ari Russo](http://arirusso.com)
+Copyright (c) 2011-2022 [Ari Russo](http://arirusso.com)

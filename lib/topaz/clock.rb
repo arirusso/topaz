@@ -1,8 +1,8 @@
-module Topaz
+# frozen_string_literal: true
 
+module Topaz
   # The main tempo clock
   class Clock
-
     include API
 
     attr_reader :event, :midi_output, :source, :trigger
@@ -14,10 +14,10 @@ module Topaz
     def initialize(tempo_or_input, options = {}, &tick_event)
       # The MIDI clock output is initialized regardless of whether there are devices
       # so that it is ready if any are added during the running process.
-      @midi_output = MIDIClockOutput.new(:devices => options[:midi])
+      @midi_output = MIDIClockOutput.new(devices: options[:midi])
       @event = Event.new
       @trigger = EventTrigger.new
-      @source = TempoSource.new(tempo_or_input, options.merge({ :event => @event }))
+      @source = TempoSource.new(tempo_or_input, options.merge({ event: @event }))
       initialize_events(&tick_event)
     end
 
@@ -41,15 +41,15 @@ module Topaz
     # of waiting for a start or clock message
     #
     # @param [Hash] options
-    # @option options [Boolean] :background Whether to run the timer in a background thread (default: false)
+    # @param [Boolean] background Whether to run the timer in a background thread (default: false)
     # @return [Boolean]
-    def start(options = {})
+    def start(background: false)
       @start_time = Time.now
       begin
-        @source.start(options)
-      rescue SystemExit, Interrupt => exception
+        @source.start(background: background)
+      rescue SystemExit, Interrupt => e
         stop
-        raise exception
+        raise e
       end
       true
     end
@@ -77,22 +77,24 @@ module Topaz
     # @return [Clock::Event]
     def initialize_events(&block)
       @event.tick << block if block_given?
-      clock = proc do
+      @event.clock = clock_tick
+      @event.start << proc { @midi_output.do_start }
+      @event.stop << proc { @midi_output.do_stop }
+      @event
+    end
+
+    def clock_tick
+      proc do
         if @trigger.stop?
           stop
         else
           @midi_output.do_clock
         end
       end
-      @event.clock = clock
-      @event.start << proc { @midi_output.do_start }
-      @event.stop << proc { @midi_output.do_stop }
-      @event
     end
 
     # Trigger clock events
     class EventTrigger
-
       def initialize
         @stop = []
       end
@@ -113,12 +115,10 @@ module Topaz
       def stop?
         !@stop.nil? && @stop.any?(&:call)
       end
-
     end
 
     # Clock events
     class Event
-
       attr_accessor :clock
 
       def initialize
@@ -179,11 +179,8 @@ module Topaz
       def do_tick
         @tick.map(&:call)
       end
-
     end
-
   end
 
   Tempo = Clock # For backwards compat
-
 end
